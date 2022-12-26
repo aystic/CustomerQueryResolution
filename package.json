@@ -1,0 +1,27 @@
+{
+  "name": "branch-assignment",
+  "version": "1.0.0",
+  "description": "Take home assignment for the intern role by Branch International",
+  "main": ".",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aystic/BranchInternational-Assignment.git"
+  },
+  "author": "Mohit Pathak",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aystic/BranchInternational-Assignment/issues"
+  },
+  "homepage": "https://github.com/aystic/BranchInternational-Assignment#readme",
+  "devDependencies": {
+    "cz-conventional-changelog": "^3.3.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
