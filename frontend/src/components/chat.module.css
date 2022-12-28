@@ -2,8 +2,8 @@
 	display: flex;
 	justify-content: center;
 	width: 95vw;
+	min-height: 3.2rem;
 	height: fit-content;
-	padding: 0.8rem;
 	background-color: lightslategray;
 }
 
@@ -12,8 +12,9 @@
 	color: #2c778f;
 	border: none;
 	border-radius: 0.4rem;
-	margin: 0 0.5rem;
-	width: 6rem;
+	margin: 0.5rem;
+	width: fit-content;
+	padding: 0.4rem;
 	cursor: pointer;
 	transition: all 0.2s;
 }
@@ -22,6 +23,9 @@
 }
 .top-bar-btn:active {
 	background-color: #e9f5f8;
+}
+.top-bar-btn-active {
+	background-color: white;
 }
 .chat-body {
 	display: flex;
@@ -37,11 +41,13 @@
 	overflow: auto;
 	overflow-x: hidden;
 	border-right: 0.2rem solid #444;
-	background-color: black;
+	background-color: lightslategray;
 }
 .chat-actions {
 	display: flex;
 	justify-content: center;
+	flex-wrap: wrap;
+
 	height: 100%;
 	width: 25%;
 }
@@ -132,4 +138,7 @@
 	border-radius: 0.8rem;
 	color: white;
 	background-color: #0069cf;
+}
+.scroll-to-div {
+	margin-top: 7rem;
 }

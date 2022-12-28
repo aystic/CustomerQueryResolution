@@ -1,11 +1,50 @@
-const TopBar = ({ classes }) => {
+import { useState } from "react";
+const TopBar = ({ isUser, classes }) => {
+	const [section, setSection] = useState("current");
 	const chatSegregationHandler = (priority) => {
 		console.log(priority);
 	};
 	return (
 		<div className={classes["top-bar"]}>
 			<div className={classes["chat-actions"]}>
-				<button
+				{!isUser && (
+					<>
+						<button
+							className={`${classes["top-bar-btn"]} ${
+								section === "current" ? classes["top-bar-btn-active"] : ""
+							}`}
+						>
+							Current
+						</button>
+						<button
+							className={
+								section !== "resolved"
+									? classes["top-bar-btn"]
+									: classes["top-bar-btn-active"]
+							}
+						>
+							Resolved
+						</button>
+						<button
+							className={
+								section !== "new-chats"
+									? classes["top-bar-btn"]
+									: classes["top-bar-btn-active"]
+							}
+						>
+							New Requests
+						</button>
+					</>
+				)}
+			</div>
+			<div className={classes["chat-details"]}></div>
+		</div>
+	);
+};
+export default TopBar;
+
+/*
+<button
 					onClick={chatSegregationHandler.bind(null, "priority-1")}
 					className={classes["top-bar-btn"]}
 				>
@@ -29,9 +68,4 @@ const TopBar = ({ classes }) => {
 				>
 					Others
 				</button>
-			</div>
-			<div className={classes["chat-details"]}></div>
-		</div>
-	);
-};
-export default TopBar;
+*/

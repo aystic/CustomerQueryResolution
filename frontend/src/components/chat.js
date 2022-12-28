@@ -3,10 +3,10 @@ import TopBar from "./topBar";
 import Sidebar from "./sidebar";
 import ChatWindow from "./chatwindow";
 
-const Chat = () => {
+const Chat = ({ isUser }) => {
 	return (
 		<>
-			<TopBar classes={classes} />
+			<TopBar isUser={isUser} classes={classes} />
 			<div className={classes["chat-body"]}>
 				<Sidebar classes={classes} />
 				<ChatWindow classes={classes} />

@@ -12,7 +12,9 @@ function App() {
 	};
 	const startChatHandler = (e) => {
 		e.preventDefault();
-		socket.connect();
+		// socket.connect();
+
+		// In production we will fetch the role of the user from the backend
 		if (user.split("@")[1] === "agent.com") {
 			setIsUser(false);
 		} else {
@@ -24,7 +26,7 @@ function App() {
 		<>
 			{isLoggedIn && (
 				<div className="chat-container">
-					<Chat />
+					<Chat isUser={isUser} />
 				</div>
 			)}
 			{!isLoggedIn && (
