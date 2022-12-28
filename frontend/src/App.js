@@ -1,25 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { useState } from "react";
+import socket from "./utils/socket";
+import Chat from "./components/chat";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [user, setUser] = useState("");
+	const [isUser, setIsUser] = useState(false);
+	const [isLoggedIn, setIsLoggedIn] = useState(true);
+	const inputChangeHandler = (e) => {
+		setUser(e.target.value);
+	};
+	const startChatHandler = (e) => {
+		e.preventDefault();
+		socket.connect();
+		if (user.split("@")[1] === "agent.com") {
+			setIsUser(false);
+		} else {
+			setIsUser(true);
+		}
+		setIsLoggedIn(true);
+	};
+	return (
+		<>
+			{isLoggedIn && (
+				<div className="chat-container">
+					<Chat />
+				</div>
+			)}
+			{!isLoggedIn && (
+				<div className="start-screen">
+					<form onSubmit={startChatHandler}>
+						<input
+							className="username-input"
+							placeholder="Enter your username"
+							type={"email"}
+							value={user}
+							onChange={inputChangeHandler}
+						/>
+						<button className="username-input-btn" type="submit">
+							Enter
+						</button>
+					</form>
+				</div>
+			)}
+		</>
+	);
 }
 
 export default App;
