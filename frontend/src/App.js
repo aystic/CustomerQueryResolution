@@ -15,7 +15,7 @@ function App() {
 		current: [],
 	});
 	const [isUser, setIsUser] = useState(true);
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
+	const [isLoggedIn, setIsLoggedIn] = useState(true);
 	const [isValid, setValidity] = useState(false);
 	const inputChangeHandler = (e) => {
 		setEmail(e.target.value);
