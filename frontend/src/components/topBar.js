@@ -1,43 +1,46 @@
-import { useState } from "react";
-const TopBar = ({ isUser, classes }) => {
-	const [section, setSection] = useState("current");
-	const chatSegregationHandler = (priority) => {
-		console.log(priority);
+const TopBar = ({ isUser, classes, userData, tagChangeHandler, chatTag }) => {
+	const chatSegregationHandler = (chatType) => {
+		tagChangeHandler(chatType);
 	};
 	return (
 		<div className={classes["top-bar"]}>
 			<div className={classes["chat-actions"]}>
+				<button
+					onClick={chatSegregationHandler.bind(null, "current")}
+					className={`${classes["top-bar-btn"]} ${
+						chatTag === "current" ? classes["top-bar-btn-active"] : ""
+					}`}
+				>
+					Current
+				</button>
+				<button
+					onClick={chatSegregationHandler.bind(null, "resolved")}
+					className={`${classes["top-bar-btn"]} ${
+						chatTag === "resolved" ? classes["top-bar-btn-active"] : ""
+					}`}
+				>
+					Resolved
+				</button>
 				{!isUser && (
-					<>
-						<button
-							className={`${classes["top-bar-btn"]} ${
-								section === "current" ? classes["top-bar-btn-active"] : ""
-							}`}
-						>
-							Current
-						</button>
-						<button
-							className={
-								section !== "resolved"
-									? classes["top-bar-btn"]
-									: classes["top-bar-btn-active"]
-							}
-						>
-							Resolved
-						</button>
-						<button
-							className={
-								section !== "new-chats"
-									? classes["top-bar-btn"]
-									: classes["top-bar-btn-active"]
-							}
-						>
-							New Requests
-						</button>
-					</>
+					<button
+						className={`${classes["top-bar-btn"]} ${
+							chatTag === "new-chats" ? classes["top-bar-btn-active"] : ""
+						}`}
+					>
+						New Requests
+					</button>
 				)}
 			</div>
-			<div className={classes["chat-details"]}></div>
+			<div className={classes["chat-details"]}>
+				<div className={classes["user-details"]}>
+					<div className={classes["online-status"]}></div>
+					test@agent.com(Customer Agent)
+				</div>
+				<div className={classes["user-details"]}>
+					<div className={classes["online-status"]}></div>
+					{userData.email}(You)
+				</div>
+			</div>
 		</div>
 	);
 };

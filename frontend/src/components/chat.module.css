@@ -1,10 +1,12 @@
 .top-bar {
 	display: flex;
 	justify-content: center;
+	align-items: center;
 	width: 95vw;
 	min-height: 3.2rem;
 	height: fit-content;
-	background-color: lightslategray;
+	border-bottom: 0.2rem solid #333;
+	background-color: #1f1f1f;
 }
 
 .top-bar-btn {
@@ -18,9 +20,6 @@
 	cursor: pointer;
 	transition: all 0.2s;
 }
-.top-bar-btn:hover {
-	background-color: #cbe6ef;
-}
 .top-bar-btn:active {
 	background-color: #e9f5f8;
 }
@@ -33,15 +32,20 @@
 	align-items: center;
 	width: 95vw;
 	height: 90vh;
+	border: none;
 	background-image: url(../../assets/chatBg.svg);
+	background-origin: border-box;
+	background-clip: border-box;
+	background-size: cover;
+	background-repeat: repeat;
 }
 .sidebar {
 	width: 25%;
 	height: 100%;
 	overflow: auto;
 	overflow-x: hidden;
-	border-right: 0.2rem solid #444;
-	background-color: lightslategray;
+	border-right: 0.2rem solid #333;
+	background-color: #1f1f1f;
 }
 .chat-actions {
 	display: flex;
@@ -53,9 +57,23 @@
 }
 .chat-details {
 	display: flex;
-	justify-content: space-around;
+	align-items: center;
+	justify-content: space-between;
+	color: white;
 	height: 100%;
 	width: 75%;
+}
+.user-details {
+	display: flex;
+	margin: 0.4rem 1rem;
+}
+.online-status {
+	display: inline-block;
+	height: 1.6rem;
+	width: 1.6rem;
+	margin: 0.4rem;
+	border-radius: 100rem;
+	background-color: green;
 }
 .chat {
 	width: 75%;
@@ -127,7 +145,7 @@
 	overflow-wrap: break-word;
 	border-radius: 0.8rem;
 	color: white;
-	background-color: #1e7b1e;
+	background-color: #357c3c;
 }
 
 .message-other {
@@ -137,12 +155,48 @@
 	padding: 0.4rem;
 	border-radius: 0.8rem;
 	color: white;
-	background-color: #0069cf;
+	background-color: #2b4865;
 }
 .scroll-to-div {
 	margin-top: 7rem;
 }
 
+.centered {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.info-text-big {
+	color: #444;
+	font-size: 3.2rem;
+	text-align: center;
+	margin: 1rem;
+}
+
+.centered-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	width: 100%;
+}
+
+.new-chat-btn {
+	font-size: 2.4rem;
+	color: #bdb5ef;
+	padding: 1.6rem 3.2rem;
+	border: none;
+	outline: none;
+	border-radius: 0.4rem;
+	background-color: #4834d4;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+.new-chat-btn:active {
+	background-color: #6554db;
+	transform: scale(0.9);
+}
 
 .scroller {
 	width: 300px;
