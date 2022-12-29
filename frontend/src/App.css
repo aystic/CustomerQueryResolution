@@ -83,3 +83,12 @@
 	overflow: hidden;
 	box-shadow: 0px 0px 16px 16px rgba(0, 0, 0, 0.2);
 }
+
+::-webkit-scrollbar {
+	background-color: #1f1f1f;
+	width: 0.8rem;
+}
+::-webkit-scrollbar-thumb {
+	background-color: #555;
+	border-radius: 10rem;
+}
