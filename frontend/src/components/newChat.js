@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import classes from "./chat.module.css";
 import Modal from "../common/modal";
-const NewChat = () => {
+const NewChat = ({ showNotification }) => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const modalToggleHandler = () => {
 		setIsModalOpen((prev) => !prev);
@@ -16,6 +16,7 @@ const NewChat = () => {
 						modalType={"newChat"}
 						isModalOpen={isModalOpen}
 						modalToggleHandler={modalToggleHandler}
+						showNotification={showNotification}
 					/>,
 					document.getElementById("modal-container")
 				)}
