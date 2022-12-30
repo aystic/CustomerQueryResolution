@@ -2,6 +2,7 @@ import ModalElement from "./modalElement";
 import classes from "./modal.module.css";
 import { createChat } from "../api/user";
 import { useState, useRef, useEffect } from "react";
+import { tableData } from "./tableData";
 
 const ISSUES = ["Priority1", "Priority2", "Priority3", "Priority4"];
 const SUB_ISSUES = [
@@ -31,7 +32,12 @@ const Modal = ({
 	const subIssueRef = useRef(null);
 	const textAreaRef = useRef(null);
 	const [formValidity, setFormValidity] = useState(false);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [selectedRow, setSelectedRow] = useState(null);
 	const submitBtnRef = useRef(null);
+	const [rowsPerPage, setRowsPerPage] = useState(20);
+	const [searchQuery, setSearchQuery] = useState("");
+	const [searchFor, setSearchFor] = useState("");
 	const formResetHandler = () => {
 		setFormState({
 			issue: {
@@ -63,6 +69,30 @@ const Modal = ({
 		}
 	};
 
+	const rowsPerPageChangeHandler = (value, e) => {
+		e.preventDefault();
+		if (value >= 1 && value <= tableData.length) {
+			setRowsPerPage(value);
+		} else if (value > tableData.length) {
+			setRowsPerPage(tableData.length);
+		} else {
+			console.error("Invalid rows per page value");
+		}
+	};
+
+	const pageChangeHandler = (pageNo) => {
+		const totalPages = Math.ceil(tableData.length / rowsPerPage);
+		if (pageNo >= 1 && pageNo <= totalPages) setCurrentPage(pageNo);
+	};
+
+	useEffect(() => {
+		const token = setTimeout(() => {
+			setSearchFor(searchQuery);
+		}, 200);
+		return () => {
+			clearTimeout(token);
+		};
+	}, [searchQuery]);
 	let modalBody = "";
 	if (modalType === "newChat") {
 		modalBody = (
@@ -160,6 +190,66 @@ const Modal = ({
 			</>
 		);
 	} else {
+		//idx will lie from ROWS*(PAGE-1) <-> ROWS*PAGE-1;
+		const table = [];
+		for (
+			let i = rowsPerPage * (currentPage - 1);
+			i <
+			(tableData.length <= rowsPerPage * currentPage
+				? tableData.length
+				: rowsPerPage * currentPage);
+			i++
+		) {
+			const val = tableData[i];
+			const isAnySelected = selectedRow !== null;
+			const isThisSelected = isAnySelected && selectedRow.index === i;
+			const markup = (
+				<tr key={i} className={`${isThisSelected && classes["selected-row"]}`}>
+					<td>{i + 1}</td>
+					<td>{val.col1}</td>
+					<td>{val.col2}</td>
+					<td>{val.col3}</td>
+					<td>{val.col4}</td>
+					<td>{val.col5}</td>
+					<td>{val.col6}</td>
+					<td>
+						<button
+							disabled={!isAnySelected ? false : isThisSelected ? false : true}
+							className={`${isThisSelected && classes["active"]}`}
+							onClick={() => {
+								if (isThisSelected) {
+									setSelectedRow(null);
+								} else {
+									if (!isAnySelected) {
+										setSelectedRow({ index: i, ...val });
+									}
+								}
+							}}
+						>
+							{isThisSelected ? "DeSelect" : "Resolve"}
+						</button>
+					</td>
+				</tr>
+			);
+			table.push(markup);
+		}
+		modalBody = (
+			<table className={classes["table"]}>
+				<thead>
+					<tr>
+						<td>S.No</td>
+						<td>Date</td>
+						<td>User</td>
+						<td>Issue</td>
+						<td>SubIssue</td>
+						<td>Description</td>
+						<td>Priority</td>
+						<td>Action</td>
+					</tr>
+				</thead>
+				<tbody>{table}</tbody>
+			</table>
+		);
 	}
 	useEffect(() => {
 		if (
@@ -182,11 +272,22 @@ const Modal = ({
 				isModalOpen={isModalOpen}
 				modalBody={modalBody}
 				modalName={
-					modalType === "newChat" ? "Submit new query" : "View all requests"
+					modalType === "newChat"
+						? "Submit new query"
+						: `View all requests - ${Math.ceil(
+								tableData.length / rowsPerPage
+						  )} page(s)`
 				}
 				formResetHandler={formResetHandler}
 				submitBtnRef={submitBtnRef}
 				formValidity={formValidity}
+				rowsPerPage={rowsPerPage}
+				currentPage={currentPage}
+				totalRows={tableData.length}
+				rowsPerPageChangeHandler={rowsPerPageChangeHandler}
+				pageChangeHandler={pageChangeHandler}
+				searchQuery={searchQuery}
+				setSearchQuery={setSearchQuery}
 			/>
 		</>
 	);

@@ -1,47 +1,74 @@
-const TopBar = ({ isUser, classes, userData, tagChangeHandler, chatTag }) => {
+import { useState } from "react";
+import Modal from "../common/modal";
+import { createPortal } from "react-dom";
+const TopBar = ({
+	isUser,
+	classes,
+	userData,
+	tagChangeHandler,
+	chatTag,
+	showNotification,
+}) => {
+	const [isModalOpen, setIsModalOpen] = useState(false);
 	const chatSegregationHandler = (chatType) => {
 		tagChangeHandler(chatType);
 	};
+	const modalToggleHandler = () => {
+		setIsModalOpen((prev) => !prev);
+	};
 	return (
-		<div className={classes["top-bar"]}>
-			<div className={classes["chat-actions"]}>
-				<button
-					onClick={chatSegregationHandler.bind(null, "current")}
-					className={`${classes["top-bar-btn"]} ${
-						chatTag === "current" ? classes["top-bar-btn-active"] : ""
-					}`}
-				>
-					Current
-				</button>
-				<button
-					onClick={chatSegregationHandler.bind(null, "resolved")}
-					className={`${classes["top-bar-btn"]} ${
-						chatTag === "resolved" ? classes["top-bar-btn-active"] : ""
-					}`}
-				>
-					Resolved
-				</button>
-				{!isUser && (
+		<>
+			{isModalOpen &&
+				createPortal(
+					<Modal
+						modalType={"newRequests"}
+						isModalOpen={isModalOpen}
+						modalToggleHandler={modalToggleHandler}
+						showNotification={showNotification}
+					/>,
+					document.getElementById("modal-container")
+				)}
+			<div className={classes["top-bar"]}>
+				<div className={classes["chat-actions"]}>
 					<button
+						onClick={chatSegregationHandler.bind(null, "current")}
 						className={`${classes["top-bar-btn"]} ${
-							chatTag === "new-chats" ? classes["top-bar-btn-active"] : ""
+							chatTag === "current" ? classes["top-bar-btn-active"] : ""
 						}`}
 					>
-						New Requests
+						Current
 					</button>
-				)}
-			</div>
-			<div className={classes["chat-details"]}>
-				<div className={classes["user-details"]}>
-					<div className={classes["online-status"]}></div>
-					test@agent.com(Customer Agent)
+					<button
+						onClick={chatSegregationHandler.bind(null, "resolved")}
+						className={`${classes["top-bar-btn"]} ${
+							chatTag === "resolved" ? classes["top-bar-btn-active"] : ""
+						}`}
+					>
+						Resolved
+					</button>
+					{!isUser && (
+						<button
+							onClick={modalToggleHandler}
+							className={`${classes["top-bar-btn"]} ${
+								chatTag === "new-chats" ? classes["top-bar-btn-active"] : ""
+							}`}
+						>
+							New Requests
+						</button>
+					)}
 				</div>
-				<div className={classes["user-details"]}>
-					<div className={classes["online-status"]}></div>
-					{userData.email}(You)
+				<div className={classes["chat-details"]}>
+					<div className={classes["user-details"]}>
+						<div className={classes["online-status"]}></div>
+						test@test.com(Customer{!isUser ? "" : " Agent"})
+					</div>
+					<div className={classes["user-details"]}>
+						<div className={classes["online-status"]}></div>
+						{userData.email}(You)
+					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 export default TopBar;
