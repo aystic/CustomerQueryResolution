@@ -9,7 +9,7 @@ const messages = [
 		self: false,
 	},
 ];
-const ChatWindow = ({ classes, selectedChat }) => {
+const ChatWindow = ({ classes, selectedChat, showNotification }) => {
 	const [chats, setChats] = useState(messages);
 	const [message, setMessage] = useState("");
 	const scrollToRef = useRef(null);
@@ -83,7 +83,7 @@ const ChatWindow = ({ classes, selectedChat }) => {
 					</div>
 				</>
 			) : (
-				<NewChat />
+				<NewChat showNotification={showNotification} />
 			)}
 		</div>
 	);

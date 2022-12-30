@@ -23,8 +23,8 @@ body {
 }
 *:focus-visible {
 	outline-style: solid !important;
-	outline-color: #fed049 !important;
-	outline-width: 0.4rem !important;
+	outline-color: #aaa !important;
+	outline-width: 0.2rem !important;
 }
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",

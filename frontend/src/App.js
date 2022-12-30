@@ -1,8 +1,10 @@
 import "./App.css";
 import { useState } from "react";
 import socket from "./utils/socket";
+import { login } from "./api/common";
 import Chat from "./components/chat";
-import { login } from "./api/login";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EMAIL_REGEX =
 	/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -43,11 +45,32 @@ function App() {
 			console.error(err);
 		}
 	};
+
+	const showNotification = ({ type, value }) => {
+		toast(value, { type, className: "notification" });
+	};
+
 	return (
 		<>
+			<ToastContainer
+				position="top-right"
+				autoClose={3000}
+				hideProgressBar
+				newestOnTop={false}
+				closeOnClick
+				rtl={false}
+				pauseOnFocusLoss
+				draggable
+				pauseOnHover
+				theme="dark"
+			/>
 			{isLoggedIn && (
 				<div className="chat-container">
-					<Chat userData={userData} isUser={isUser} />
+					<Chat
+						userData={userData}
+						isUser={isUser}
+						showNotification={showNotification}
+					/>
 				</div>
 			)}
 			{!isLoggedIn && (

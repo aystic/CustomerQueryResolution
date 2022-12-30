@@ -2,7 +2,6 @@ import ModalElement from "./modalElement";
 import classes from "./modal.module.css";
 import { createChat } from "../api/user";
 import { useState, useRef, useEffect } from "react";
-import { toast } from "react-toastify";
 
 const ISSUES = ["Priority1", "Priority2", "Priority3", "Priority4"];
 const SUB_ISSUES = [
