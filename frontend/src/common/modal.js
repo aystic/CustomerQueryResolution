@@ -73,8 +73,10 @@ const Modal = ({
 		e.preventDefault();
 		if (value >= 1 && value <= tableData.length) {
 			setRowsPerPage(value);
+			setCurrentPage(1);
 		} else if (value > tableData.length) {
 			setRowsPerPage(tableData.length);
+			setCurrentPage(1);
 		} else {
 			console.error("Invalid rows per page value");
 		}
