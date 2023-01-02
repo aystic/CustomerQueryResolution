@@ -1,21 +1,19 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
+import { GlobalContext } from "../store/globalContext";
 import Modal from "../common/modal";
 import { createPortal } from "react-dom";
-const TopBar = ({
-	isUser,
-	classes,
-	userData,
-	tagChangeHandler,
-	chatTag,
-	showNotification,
-}) => {
+const TopBar = ({ classes, tagChangeHandler, chatTag, receiverEmail }) => {
+	const globalContext = useContext(GlobalContext);
 	const [isModalOpen, setIsModalOpen] = useState(false);
+
 	const chatSegregationHandler = (chatType) => {
 		tagChangeHandler(chatType);
 	};
 	const modalToggleHandler = () => {
 		setIsModalOpen((prev) => !prev);
 	};
+
+	useEffect(() => {}, []);
 	return (
 		<>
 			{isModalOpen &&
@@ -24,7 +22,6 @@ const TopBar = ({
 						modalType={"newRequests"}
 						isModalOpen={isModalOpen}
 						modalToggleHandler={modalToggleHandler}
-						showNotification={showNotification}
 					/>,
 					document.getElementById("modal-container")
 				)}
@@ -46,7 +43,7 @@ const TopBar = ({
 					>
 						Resolved
 					</button>
-					{!isUser && (
+					{!globalContext.isUser && (
 						<button
 							onClick={modalToggleHandler}
 							className={`${classes["top-bar-btn"]} ${
@@ -59,12 +56,18 @@ const TopBar = ({
 				</div>
 				<div className={classes["chat-details"]}>
 					<div className={classes["user-details"]}>
-						<div className={classes["online-status"]}></div>
-						test@test.com(Customer{!isUser ? "" : " Agent"})
+						{receiverEmail && (
+							<>
+								<div className={classes["online-status"]}></div>
+								{`${receiverEmail}(Customer${
+									!globalContext.isUser ? "" : " Agent"
+								})`}
+							</>
+						)}
 					</div>
 					<div className={classes["user-details"]}>
 						<div className={classes["online-status"]}></div>
-						{userData.email}(You)
+						{globalContext.userData.email}(You)
 					</div>
 				</div>
 			</div>
@@ -72,30 +75,3 @@ const TopBar = ({
 	);
 };
 export default TopBar;
-
-/*
-<button
-					onClick={chatSegregationHandler.bind(null, "priority-1")}
-					className={classes["top-bar-btn"]}
-				>
-					Urgent
-				</button>
-				<button
-					onClick={chatSegregationHandler.bind(null, "priority-2")}
-					className={classes["top-bar-btn"]}
-				>
-					Medium
-				</button>
-				<button
-					onClick={chatSegregationHandler.bind(null, "priority-3")}
-					className={classes["top-bar-btn"]}
-				>
-					Low
-				</button>
-				<button
-					onClick={chatSegregationHandler.bind(null, "priority-4")}
-					className={classes["top-bar-btn"]}
-				>
-					Others
-				</button>
-*/
