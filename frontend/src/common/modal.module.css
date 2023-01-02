@@ -16,8 +16,8 @@
 	max-height: 90%;
 	max-width: 85%;
 	color: #aaa;
-	backdrop-filter: blur(8.4rem) saturate(150%);
-	-webkit-backdrop-filter: blur(8.4rem) saturate(150%);
+	backdrop-filter: blur(15.6rem) contrast(125%);
+	-webkit-backdrop-filter: blur(15.6rem) contrast(125%);
 	background-color: rgba(0, 0, 0, 0.1);
 	border-radius: 12px;
 	overflow: hidden;
@@ -25,17 +25,16 @@
 	/* transition: modal-entry 0.2s; */
 }
 .modal-small {
-	min-height: 60%;
-	min-width: 40%;
-	max-width: 50%;
+	height: 65%;
+	width: 40%;
 }
 .modal-medium {
-	max-height: 75%;
-	max-width: 75%;
+	height: 75%;
+	width: 75%;
 }
 .modal-large {
-	max-height: 90%;
-	max-width: 85%;
+	height: 90%;
+	width: 85%;
 }
 
 .modal-entry {
@@ -99,12 +98,20 @@
 
 .modal-top-bar img {
 	height: 3.2rem;
+	user-select: none;
+}
+.modal-close-btn {
+	height: 3.2rem;
+	width: 3.2rem;
+	background-image: url(./close-button.svg);
+	background-repeat: no-repeat;
+	background-size: contain;
 }
 .modal-bottom-bar {
 	display: flex;
 	justify-content: center;
 	background-color: transparent;
-	max-height: 5.6rem;
+	height: 5.6rem;
 	width: 100%;
 	border-top: 1px solid #444;
 }
@@ -118,6 +125,7 @@
 	border: none;
 	outline: none;
 	cursor: pointer;
+	user-select: none;
 	transition: all 0.2s;
 }
 .modal-bottom-bar > button:active {
@@ -125,7 +133,8 @@
 }
 .modal-body {
 	/* font-size: 1.6rem; */
-	height: fit-content;
+	flex-grow: 1;
+	min-width: 100%;
 	font-weight: normal;
 	padding: 0.8rem;
 	overflow: auto;
@@ -222,12 +231,13 @@
 	border-color: #444;
 }
 .table button.active {
-	color: black;
-	background-color: #aaa;
+	color: #aaa;
+	background-color: #333;
+	border-color: #333;
 }
 .table tbody tr.selected-row {
-	color: white;
-	background-color: #2b7a0b;
+	color: black;
+	background-color: #aaa;
 }
 
 .pagination {

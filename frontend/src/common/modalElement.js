@@ -48,12 +48,16 @@ const ModalElement = ({
 			>
 				<div className={classes["modal-top-bar"]}>
 					<h2>{modalName}</h2>
-					<button autoFocus={true}>
-						<img
+					<button
+						onClick={closeModalHandler}
+						className={classes["modal-close-btn"]}
+						autoFocus={true}
+					>
+						{/* <img
 							src={closeBtn}
 							onClick={closeModalHandler}
 							alt="Modal close button"
-						/>
+						/> */}
 					</button>
 				</div>
 				<div className={classes["modal-body"]}>{modalBody}</div>

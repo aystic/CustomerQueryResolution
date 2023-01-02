@@ -1,9 +1,10 @@
 import ModalElement from "./modalElement";
 import classes from "./modal.module.css";
 import { createChat } from "../api/user";
-import { useState, useRef, useEffect } from "react";
-import { tableData } from "./tableData";
-
+import { useState, useContext, useRef, useEffect } from "react";
+import { GlobalContext } from "../store/globalContext";
+import { getRequests, markToResolve } from "../api/agent";
+import Loader from "./loader";
 const ISSUES = ["Priority1", "Priority2", "Priority3", "Priority4"];
 const SUB_ISSUES = [
 	"SubPriority1",
@@ -11,12 +12,8 @@ const SUB_ISSUES = [
 	"SubPriority3",
 	"SubPriority4",
 ];
-const Modal = ({
-	modalType,
-	modalToggleHandler,
-	isModalOpen,
-	showNotification,
-}) => {
+const Modal = ({ modalType, modalToggleHandler, isModalOpen }) => {
+	const globalContext = useContext(GlobalContext);
 	const [formState, setFormState] = useState({
 		issue: {
 			name: "",
@@ -37,7 +34,15 @@ const Modal = ({
 	const submitBtnRef = useRef(null);
 	const [rowsPerPage, setRowsPerPage] = useState(20);
 	const [searchQuery, setSearchQuery] = useState("");
-	const [searchFor, setSearchFor] = useState("");
+	const [tableData, setTableData] = useState([]);
+	const [loading, setLoading] = useState(
+		modalType === "newRequests" ? true : false
+	);
+	const [metaData, setMetadata] = useState({
+		start: 0,
+		end: 0,
+		totalRows: 0,
+	});
 	const formResetHandler = () => {
 		setFormState({
 			issue: {
@@ -57,11 +62,41 @@ const Modal = ({
 	const submitHandler = async (e) => {
 		e.preventDefault();
 		try {
-			const postData = formState;
+			setLoading(true);
+			const postData = {
+				id: globalContext.userData.id,
+				email: globalContext.userData.email,
+				priority: formState.issue.priority * 10 + formState.subIssue.priority,
+				issue: formState.issue.name,
+				subIssue: formState.subIssue.name,
+				description: formState.description,
+				resolved: false,
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+			};
 			const data = await createChat(postData);
-			console.log(data);
+			globalContext.setUserData((prev) => {
+				return {
+					...prev,
+					current: [
+						...prev.current,
+						{
+							id: data.id,
+							userID: postData.id,
+							priority: postData.priority,
+							issue: postData.issue,
+							subIssue: postData.subIssue,
+							description: postData.description,
+							resolved: postData.resolved,
+						},
+					],
+				};
+			});
+			modalToggleHandler();
+			setLoading(false);
 		} catch (err) {
-			showNotification({
+			setLoading(false);
+			globalContext.showNotification({
 				type: "error",
 				value: err.message,
 			});
@@ -71,11 +106,11 @@ const Modal = ({
 
 	const rowsPerPageChangeHandler = (value, e) => {
 		e.preventDefault();
-		if (value >= 1 && value <= tableData.length) {
+		if (value >= 1 && value <= metaData.totalRows) {
 			setRowsPerPage(value);
 			setCurrentPage(1);
-		} else if (value > tableData.length) {
-			setRowsPerPage(tableData.length);
+		} else if (value > metaData.totalRows) {
+			setRowsPerPage(metaData.totalRows);
 			setCurrentPage(1);
 		} else {
 			console.error("Invalid rows per page value");
@@ -83,18 +118,75 @@ const Modal = ({
 	};
 
 	const pageChangeHandler = (pageNo) => {
-		const totalPages = Math.ceil(tableData.length / rowsPerPage);
+		const totalPages = Math.ceil(metaData.totalRows / rowsPerPage);
 		if (pageNo >= 1 && pageNo <= totalPages) setCurrentPage(pageNo);
 	};
 
 	useEffect(() => {
-		const token = setTimeout(() => {
-			setSearchFor(searchQuery);
-		}, 200);
-		return () => {
-			clearTimeout(token);
+		const fetch = async () => {
+			try {
+				setLoading(true);
+				const response = await getRequests(currentPage, rowsPerPage);
+				setTableData(response.data);
+				setMetadata({
+					start: response.range.start,
+					end: response.range.end,
+					totalRows: response.range.total,
+				});
+				setLoading(false);
+			} catch (err) {
+				setLoading(false);
+				console.error(err);
+			}
 		};
-	}, [searchQuery]);
+		if (modalType === "newRequests") fetch();
+	}, [currentPage, rowsPerPage, modalType]);
+
+	useEffect(() => {
+		if (
+			formState.issue.value !== "" &&
+			formState.issue.priority !== 0 &&
+			formState.subIssue.value !== "" &&
+			formState.subIssue.priority !== 0 &&
+			formState.description.length >= 20
+		) {
+			setFormValidity(true);
+		} else {
+			setFormValidity(false);
+		}
+	}, [formState]);
+
+	const markToResolveHandler = async (
+		chatID,
+		isThisSelected,
+		isAnySelected,
+		val,
+		i
+	) => {
+		try {
+			const postData = {
+				id: globalContext.userData.id,
+				email: globalContext.userData.email,
+				chatID: chatID,
+				toAdd: false,
+			};
+			if (isThisSelected) {
+				const response = await markToResolve(postData);
+				console.log(response);
+				setSelectedRow(null);
+			} else {
+				if (!isAnySelected) {
+					postData.toAdd = true;
+					const response = await markToResolve(postData);
+					console.log(response);
+					setSelectedRow({ index: i, ...val });
+				}
+			}
+		} catch (err) {
+			console.error(err);
+		}
+	};
+
 	let modalBody = "";
 	if (modalType === "newChat") {
 		modalBody = (
@@ -194,58 +286,63 @@ const Modal = ({
 	} else {
 		//idx will lie from ROWS*(PAGE-1) <-> ROWS*PAGE-1;
 		const table = [];
-		for (
-			let i = rowsPerPage * (currentPage - 1);
-			i <
-			(tableData.length <= rowsPerPage * currentPage
-				? tableData.length
-				: rowsPerPage * currentPage);
-			i++
-		) {
-			const val = tableData[i];
-			const isAnySelected = selectedRow !== null;
-			const isThisSelected = isAnySelected && selectedRow.index === i;
-			const markup = (
-				<tr key={i} className={`${isThisSelected && classes["selected-row"]}`}>
-					<td>{i + 1}</td>
-					<td>{val.col1}</td>
-					<td>{val.col2}</td>
-					<td>{val.col3}</td>
-					<td>{val.col4}</td>
-					<td>{val.col5}</td>
-					<td>{val.col6}</td>
-					<td>
-						<button
-							disabled={!isAnySelected ? false : isThisSelected ? false : true}
-							className={`${isThisSelected && classes["active"]}`}
-							onClick={() => {
-								if (isThisSelected) {
-									setSelectedRow(null);
-								} else {
-									if (!isAnySelected) {
-										setSelectedRow({ index: i, ...val });
-									}
+		if (!loading && tableData.length > 0) {
+			for (let i = 0; i < metaData.end - metaData.start + 1; i++) {
+				const val = tableData[i];
+				const isAnySelected = selectedRow !== null;
+				const isThisSelected = isAnySelected && selectedRow.index === i;
+				const markup = (
+					<tr
+						key={i}
+						className={`${isThisSelected && classes["selected-row"]}`}
+					>
+						<td>{i + 1}</td>
+						<td>{val.priority}</td>
+						<td>
+							{new Date(val.created_at).toLocaleString("en-US", {
+								timeZone: "Asia/Kolkata",
+							})}
+						</td>
+						<td>{val.issue}</td>
+						<td>{val.subIssue}</td>
+						<td>
+							{val.description.length > 50
+								? val.description.substr(0, 50) + "..."
+								: val.description}
+						</td>
+						<td>
+							<button
+								disabled={
+									!isAnySelected ? false : isThisSelected ? false : true
 								}
-							}}
-						>
-							{isThisSelected ? "DeSelect" : "Resolve"}
-						</button>
-					</td>
-				</tr>
-			);
-			table.push(markup);
+								className={`${isThisSelected && classes["active"]}`}
+								onClick={markToResolveHandler.bind(
+									null,
+									val.id,
+									isThisSelected,
+									isAnySelected,
+									val,
+									i
+								)}
+							>
+								{isThisSelected ? "DeSelect" : "Resolve"}
+							</button>
+						</td>
+					</tr>
+				);
+				table.push(markup);
+			}
 		}
 		modalBody = (
 			<table className={classes["table"]}>
 				<thead>
 					<tr>
-						<td>S.No</td>
+						<td style={{ minWidth: "6.4rem", width: "6.4rem" }}>S.No</td>
+						<td style={{ width: "7.8rem", minWidth: "7.8rem" }}>Priority</td>
 						<td>Date</td>
-						<td>User</td>
 						<td>Issue</td>
 						<td>SubIssue</td>
 						<td>Description</td>
-						<td>Priority</td>
 						<td>Action</td>
 					</tr>
 				</thead>
@@ -253,31 +350,19 @@ const Modal = ({
 			</table>
 		);
 	}
-	useEffect(() => {
-		if (
-			formState.issue.value !== "" &&
-			formState.issue.priority !== 0 &&
-			formState.subIssue.value !== "" &&
-			formState.subIssue.priority !== 0 &&
-			formState.description.length >= 20
-		) {
-			setFormValidity(true);
-		} else {
-			setFormValidity(false);
-		}
-	}, [formState]);
+
 	return (
 		<>
 			<ModalElement
 				modalType={modalType}
 				modalToggleHandler={modalToggleHandler}
 				isModalOpen={isModalOpen}
-				modalBody={modalBody}
+				modalBody={loading ? <Loader /> : modalBody}
 				modalName={
 					modalType === "newChat"
 						? "Submit new query"
 						: `View all requests - ${Math.ceil(
-								tableData.length / rowsPerPage
+								metaData.totalRows / rowsPerPage
 						  )} page(s)`
 				}
 				formResetHandler={formResetHandler}
@@ -285,7 +370,7 @@ const Modal = ({
 				formValidity={formValidity}
 				rowsPerPage={rowsPerPage}
 				currentPage={currentPage}
-				totalRows={tableData.length}
+				totalRows={metaData.totalRows}
 				rowsPerPageChangeHandler={rowsPerPageChangeHandler}
 				pageChangeHandler={pageChangeHandler}
 				searchQuery={searchQuery}
