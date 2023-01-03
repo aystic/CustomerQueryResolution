@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { getChatMessages, markAsResolve } from "../api/common";
 import { GlobalContext } from "../store/globalContext";
-import markAsResolvedBtn from "./mark-as-resolved.svg";
+// import markAsResolvedBtn from "./mark-as-resolved.svg";
 // let firstRender = true;
 const Sidebar = ({
 	classes,
@@ -19,7 +19,6 @@ const Sidebar = ({
 				receiverChangeHandler(userID, globalContext.isUser, chatID);
 				chatSelectHandler(chatID);
 				const messages = await getChatMessages(chatID);
-				console.log(messages);
 				setChat(messages);
 			} catch (err) {
 				receiverChangeHandler(null);
@@ -75,7 +74,11 @@ const Sidebar = ({
 					<div className={classes["chip"]}>{val.issue}</div>
 					<div className={classes["chip"]}>{val.subIssue}</div>
 					<div>
-						<p>{val.description}</p>
+						<p>
+							{val.description.length > 85
+								? val.description.substr(0, 85) + "..."
+								: val.description}
+						</p>
 					</div>
 				</div>
 				{chatTag === "current" ? (
