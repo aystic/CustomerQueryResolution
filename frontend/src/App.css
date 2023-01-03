@@ -86,11 +86,21 @@
 }
 
 ::-webkit-scrollbar {
-	background-color: #1f1f1f;
+	visibility: visible;
+	background-color: transparent;
+	max-width: 0.8rem;
 	width: 0.8rem;
+	cursor: pointer;
+}
+::-webkit-scrollbar:horizontal {
+	visibility: visible;
+	background-color: transparent;
+	max-height: 0.8rem;
+	height: 0.8rem;
+	cursor: pointer;
 }
 ::-webkit-scrollbar-thumb {
-	background-color: #555;
+	background-color: #444;
 	border-radius: 10rem;
 }
 

@@ -28,6 +28,7 @@ const TopBar = ({ classes, tagChangeHandler, chatTag, receiverEmail }) => {
 			<div className={classes["top-bar"]}>
 				<div className={classes["chat-actions"]}>
 					<button
+						style={{ flexGrow: "1.8" }}
 						onClick={chatSegregationHandler.bind(null, "current")}
 						className={`${classes["top-bar-btn"]} ${
 							chatTag === "current" ? classes["top-bar-btn-active"] : ""
@@ -36,6 +37,7 @@ const TopBar = ({ classes, tagChangeHandler, chatTag, receiverEmail }) => {
 						Current
 					</button>
 					<button
+						style={{ flexGrow: "1.5" }}
 						onClick={chatSegregationHandler.bind(null, "resolved")}
 						className={`${classes["top-bar-btn"]} ${
 							chatTag === "resolved" ? classes["top-bar-btn-active"] : ""
@@ -45,6 +47,7 @@ const TopBar = ({ classes, tagChangeHandler, chatTag, receiverEmail }) => {
 					</button>
 					{!globalContext.isUser && (
 						<button
+							style={{ flexGrow: "1" }}
 							onClick={modalToggleHandler}
 							className={`${classes["top-bar-btn"]} ${
 								chatTag === "new-chats" ? classes["top-bar-btn-active"] : ""
