@@ -1,0 +1,7 @@
+{
+	"env": {
+		"PORT": "8000",
+		"MONGODB_URI": "http://localhost:27017",
+		"MYSQL_URI": "http://localhost:3306"
+	}
+}

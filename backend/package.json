@@ -1,14 +1,14 @@
 {
-	"name": "backend",
-	"version": "1.0.0",
-	"description": "Backend for take home assignment for the intern role by Branch International",
-	"main": "server.js",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"author": "Mohit Pathak",
-	"license": "MIT",
-	"dependencies": {
-		"express": "^4.18.2"
-	}
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mohit Pathak",
+  "license": "MIT",
+  "devDependencies": {
+    "editorconfig": "^1.0.1"
+  }
 }
