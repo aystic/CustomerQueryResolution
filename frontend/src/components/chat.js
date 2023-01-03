@@ -13,11 +13,11 @@ const Chat = () => {
 	const [selectedChat, setSelectedChat] = useState(null);
 	const [receiverEmail, setReceiverEmail] = useState(null);
 
-	const receiverChangeHandler = async (userID) => {
+	const receiverChangeHandler = async (userID, isUser, chatID) => {
 		try {
 			if (userID) {
-				const data = await getUserDetails(userID);
-				setReceiverEmail(data[0].emailID);
+				const data = await getUserDetails(userID, isUser, chatID);
+				if (data.length > 0) setReceiverEmail(data[0].emailID);
 			} else {
 				setReceiverEmail(null);
 			}

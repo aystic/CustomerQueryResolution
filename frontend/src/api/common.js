@@ -51,12 +51,14 @@ export const markAsResolve = async (postData) => {
 	}
 };
 
-export const getUserDetails = async (userID) => {
+export const getUserDetails = async (userID, isUser, chatID) => {
 	try {
 		const response = await axios.post(
 			`${process.env.REACT_APP_BACKEND_URL}/getUserDetails`,
 			{
 				userID,
+				isUser,
+				chatID,
 			}
 		);
 		return response.data.data;

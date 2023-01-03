@@ -109,8 +109,8 @@
 .mark-as-resolved-btn,
 .mark-as-resolved-undo-btn {
 	position: absolute;
-	top: 50%;
-	transform: translateY(-50%);
+	top: 2rem;
+	/* transform: translateY(-50%); */
 	right: 0.8rem;
 	cursor: pointer;
 }

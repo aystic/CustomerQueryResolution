@@ -212,23 +212,28 @@ exports.getRequests = async (req, res, next) => {
 			throw error;
 		}
 		const [total] = await dbConnection.query(
-			`SELECT count(*) AS total FROM Chats WHERE resolved = FALSE;`,
+			`SELECT count(*) AS total
+				FROM Chats
+				WHERE resolved = FALSE
+				AND id NOT IN (
+						SELECT chatID
+				FROM ChatProgress
+					);`,
 			{
 				type: QueryTypes.SELECT,
 			}
 		);
 		const data = await dbConnection.query(
-			`SELECT
-			*
-		FROM
-			Chats
-		WHERE
-			resolved = FALSE
-		ORDER BY
-			priority ASC,
-			createdAt DESC
-		LIMIT ?,
-		?;`,
+			`SELECT *
+				FROM Chats
+				WHERE resolved = FALSE
+				AND id NOT IN (
+										SELECT chatID
+				FROM ChatProgress
+									)
+				ORDER BY
+											priority ASC, createdAt DESC
+				LIMIT ?,?;`,
 			{
 				replacements: [(pageNumber - 1) * rowsPerPage, rowsPerPage],
 				type: QueryTypes.SELECT,
@@ -300,24 +305,50 @@ exports.addChatToResolve = async (req, res, next) => {
 
 exports.getUserDetails = async (req, res, next) => {
 	try {
-		const { userID } = req.body;
-		if (!userID) {
+		const { userID, isUser, chatID } = req.body;
+		if (
+			[userID, isUser, chatID].some((val) => val === null || val === undefined)
+		) {
 			const error = new Error("Invalid payload provided!");
 			error.statusCode = 401;
 			throw error;
 		}
-		const response = await dbConnection.query(
-			`SELECT
+		let response;
+		if (!isUser) {
+			response = await dbConnection.query(
+				`SELECT
 					*
 				FROM
 					Users
 				WHERE
 					id =?;`,
-			{
-				replacements: [userID],
-				type: QueryTypes.SELECT,
-			}
-		);
+				{
+					replacements: [userID],
+					type: QueryTypes.SELECT,
+				}
+			);
+		} else {
+			response = await dbConnection.query(
+				`SELECT
+						*
+					FROM
+						Agents
+					WHERE
+						id = (
+							SELECT
+								agentID
+							FROM
+								ChatProgress
+							WHERE
+								chatID = ?
+						);`,
+				{
+					replacements: [chatID],
+					type: QueryTypes.SELECT,
+				}
+			);
+		}
+
 		res.status(200).json({ message: "Fetched successfully", data: response });
 	} catch (err) {
 		next(err);

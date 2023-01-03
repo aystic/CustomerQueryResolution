@@ -16,7 +16,7 @@ const Sidebar = ({
 	const chatListClickHandler = async (chatID, userID) => {
 		if (chatID !== selectedChat) {
 			try {
-				receiverChangeHandler(userID);
+				receiverChangeHandler(userID, globalContext.isUser, chatID);
 				chatSelectHandler(chatID);
 				const messages = await getChatMessages(chatID);
 				console.log(messages);
