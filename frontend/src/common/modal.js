@@ -171,15 +171,22 @@ const Modal = ({ modalType, modalToggleHandler, isModalOpen }) => {
 				toAdd: false,
 			};
 			if (isThisSelected) {
-				const response = await markToResolve(postData);
-				console.log(response);
+				await markToResolve(postData);
 				setSelectedRow(null);
+				globalContext.setUserData((prev) => {
+					let currentChats = prev.current;
+					const idx = prev.current.findIndex((val) => val.chatID === chatID);
+					currentChats.splice(idx, 1);
+					return { ...prev, current: currentChats };
+				});
 			} else {
 				if (!isAnySelected) {
 					postData.toAdd = true;
-					const response = await markToResolve(postData);
-					console.log(response);
+					await markToResolve(postData);
 					setSelectedRow({ index: i, ...val });
+					globalContext.setUserData((prev) => {
+						return { ...prev, current: [...prev.current, val] };
+					});
 				}
 			}
 		} catch (err) {
@@ -299,7 +306,7 @@ const Modal = ({ modalType, modalToggleHandler, isModalOpen }) => {
 						<td>{i + 1}</td>
 						<td>{val.priority}</td>
 						<td>
-							{new Date(val.created_at).toLocaleString("en-US", {
+							{new Date(val.createdAt).toLocaleString("en-US", {
 								timeZone: "Asia/Kolkata",
 							})}
 						</td>
