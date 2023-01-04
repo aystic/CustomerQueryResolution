@@ -1,5 +1,4 @@
 const { Sequelize, QueryTypes } = require("sequelize");
-const mongoose = require("mongoose");
 
 const sequelize = new Sequelize(
 	process.env.MYSQL_DB,
@@ -8,20 +7,11 @@ const sequelize = new Sequelize(
 	{
 		host: process.env.MYSQL_HOST,
 		dialect: "mysql",
-		pool: {
-			max: 5,
-			min: 0,
-			acquire: 30000,
-			idle: 10000,
-		},
 	}
 );
 
-const initDB = async () => {
+(async () => {
 	try {
-		mongoose.set("strictQuery", false);
-		await mongoose.connect(`${process.env.MONGODB_URI}`);
-		console.log("Connection to mongoDB successful");
 		await sequelize.authenticate();
 		console.log("Connection to mysql db successful");
 		await sequelize.query(
@@ -78,12 +68,45 @@ const initDB = async () => {
 				type: QueryTypes.RAW,
 			}
 		);
-		console.log("MySQL tables initialized successfully");
+		await sequelize.query(
+			`LOAD DATA INFILE '/branchData/UserList.csv'
+			INTO
+				TABLE Users FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;`,
+			{
+				type: QueryTypes.RAW,
+			}
+		);
+		await sequelize.query(
+			`LOAD DATA INFILE '/branchData/AgentList.csv'
+			INTO
+				TABLE Agents FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;`,
+			{
+				type: QueryTypes.RAW,
+			}
+		);
+		await sequelize.query(
+			`LOAD DATA INFILE '/branchData/ChatList.csv'
+			INTO
+				TABLE Chats FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;`,
+			{
+				type: QueryTypes.RAW,
+			}
+		);
+		await sequelize.query(
+			`UPDATE Agents SET emailID=SUBSTR(emailID,1,LENGTH(emailID)-1);`,
+			{
+				type: QueryTypes.UPDATE,
+			}
+		);
+
+		await sequelize.query(
+			`UPDATE Users SET emailID=SUBSTR(emailID,1,LENGTH(emailID)-1);`,
+			{
+				type: QueryTypes.UPDATE,
+			}
+		);
+		console.log("MySQL migration successful");
 	} catch (err) {
 		console.error(err);
 	}
-};
-module.exports = {
-	initDB,
-	dbConnection: sequelize,
-};
+})();

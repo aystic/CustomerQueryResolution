@@ -5,34 +5,36 @@ const { initDB } = require("./utils/initializeDB");
 const { saveChat } = require("./utils/saveChats");
 const getCurrentChats = require("./utils/getCurrentChats");
 
-/* IN PRODUCTION WE WILL USE REDIS  */
+/* In Production We Will Use Redis-Adaptor For State Management As This Server Is Stateful  */
 const { InMemorySessionStore } = require("./utils/sessionStore");
 const { InMemoryAgentStore } = require("./utils/agentStore");
 const { InMemoryUserStore } = require("./utils/userStore");
 const sessionStore = new InMemorySessionStore();
 const userStore = new InMemoryUserStore();
 const agentStore = new InMemoryAgentStore();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8000;
 
 (async () => {
 	await initDB();
 	const chatList = await getCurrentChats();
-	chatList.forEach(async (chat) => {
-		try {
-			sessionStore.saveSession(chat.chatID, {
-				user: {
-					id: chat.userID,
-					connected: false,
-				},
-				agent: {
-					id: chat.agentID,
-					connected: false,
-				},
-			});
-		} catch (err) {
-			console.error(err);
-		}
-	});
+	if (chatList) {
+		chatList.forEach(async (chat) => {
+			try {
+				sessionStore.saveSession(chat.chatID, {
+					user: {
+						id: chat.userID,
+						connected: false,
+					},
+					agent: {
+						id: chat.agentID,
+						connected: false,
+					},
+				});
+			} catch (err) {
+				console.error(err);
+			}
+		});
+	}
 })();
 
 const app = express();

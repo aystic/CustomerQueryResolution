@@ -1,0 +1,9 @@
+FROM mysql:8.0-debian
+WORKDIR /branchData
+COPY . .
+EXPOSE 3306
+ENV MYSQL_ROOT_PASSWORD="root@branchBackend"
+ENV MYSQL_DATABASE="BranchBackend"
+CMD ["mysqld","--secure-file-priv=/branchData"]
+
+

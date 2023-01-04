@@ -1,0 +1,14 @@
+FROM node:18.12.1-alpine3.17 AS build-stage
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+ENV REACT_APP_BACKEND_URL "http://localhost:8001"
+ENV REACT_APP_WEBSOCKET_URL "http://localhost:8000"
+
+RUN npm run build
+
+FROM nginx:1.23.3-alpine-slim
+COPY --from=build-stage /app/build/ /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx","-g","daemon off;"]

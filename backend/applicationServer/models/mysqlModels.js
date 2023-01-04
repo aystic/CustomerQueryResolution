@@ -34,25 +34,56 @@ const Chat = sequelize.define("Chat", {
 		primaryKey: true,
 		autoIncrement: true,
 	},
+	userID: {
+		type: DataTypes.BIGINT,
+		allowNull: false,
+		references: {
+			model: User,
+			key: id,
+		},
+	},
 	priority: {
 		type: DataTypes.INTEGER,
+		allowNull: false,
 		defaultValue: 55,
 	},
 	issue: {
 		type: DataTypes.STRING,
-		defaultValue: "dummy",
+		allowNull: false,
+		defaultValue: "dummy issue",
 	},
-	issue: {
+	subIssue: {
 		type: DataTypes.STRING,
-		defaultValue: "dummy",
+		allowNull: false,
+		defaultValue: "dummy subissue",
 	},
-	issue: {
+	description: {
 		type: DataTypes.STRING,
-		defaultValue: "dummy",
+		allowNull: false,
+		defaultValue: "some dummy description of the problem",
 	},
 	resolved: {
 		type: DataTypes.BOOLEAN,
+		allowNull: false,
 		defaultValue: false,
+	},
+	resolvedBy: {
+		type: DataTypes.BIGINT,
+		allowNull: false,
+		defaultValue: -1,
+		references: {
+			model: User,
+			key: id,
+		},
+	},
+	createdAt: {
+		type: DataTypes.DATE,
+		defaultValue: new Date(),
+	},
+	updatedAt: {
+		type: DataTypes.DATE,
+		defaultValue: new Date(),
+		onUpdate: new Date(),
 	},
 });
 
