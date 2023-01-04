@@ -228,6 +228,8 @@
 	margin: 1rem auto 1rem 1rem;
 	padding: 0.4rem 1.6rem;
 	border-radius: 0.8rem;
+	overflow-wrap: break-word;
+
 	color: white;
 	background-color: #2b4865;
 }
