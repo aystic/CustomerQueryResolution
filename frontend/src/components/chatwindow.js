@@ -6,7 +6,7 @@ const ChatWindow = ({
 	chat,
 	classes,
 	selectedChat,
-	addMessageHandler,
+	addNewMessageHandler,
 	chatTag,
 }) => {
 	const globalContext = useContext(GlobalContext);
@@ -14,7 +14,7 @@ const ChatWindow = ({
 	const scrollToRef = useRef(null);
 	const chatHandler = (e) => {
 		e.preventDefault();
-		addMessageHandler(message);
+		addNewMessageHandler(message, false);
 		setMessage("");
 	};
 	const messageChangeHandler = (e) => {

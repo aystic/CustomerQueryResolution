@@ -16,17 +16,17 @@ const Sidebar = ({
 	const chatListClickHandler = async (chatID, userID) => {
 		if (chatID !== selectedChat) {
 			try {
-				receiverChangeHandler(userID, globalContext.isUser, chatID);
+				receiverChangeHandler(false, userID, globalContext.isUser, chatID);
 				chatSelectHandler(chatID);
 				const messages = await getChatMessages(chatID);
 				setChat(messages);
 			} catch (err) {
-				receiverChangeHandler(null);
+				receiverChangeHandler(true);
 				chatSelectHandler(null);
 				console.error(err);
 			}
 		} else {
-			receiverChangeHandler(null);
+			receiverChangeHandler(true);
 			setChat([]);
 			chatSelectHandler(null);
 		}

@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import socket from "./utils/socket";
 import { GlobalContext } from "./store/globalContext";
 import { login } from "./api/common";
@@ -24,9 +24,6 @@ function App() {
 		try {
 			const data = await login(email);
 			const userData = await getChat(data.id, data.emailID);
-			socket.auth = { email: data.emailID };
-			socket.connect();
-
 			const userChatData = {
 				id: data.id,
 				email: data.emailID,
@@ -42,16 +39,47 @@ function App() {
 			});
 			globalContext.setIsLoggedIn(true);
 			globalContext.setUserData(userChatData);
+			let isUser;
 			if (data.emailID.split("@")[1] === "agent.com") {
+				isUser = false;
 				globalContext.setIsUser(false);
 			} else {
+				isUser = true;
 				globalContext.setIsUser(true);
 			}
+			socket.auth = { email: data.emailID, id: data.id, isUser };
+			socket.connect();
 		} catch (err) {
 			console.error(err);
 		}
 	};
+	useEffect(() => {
+		socket.on("connect", () => {
+			console.log("connected", new Date());
+			globalContext.setIsUserConnected(true);
+		});
+		socket.on("disconnect", (reason) => {
+			if (reason === "io server disconnect") {
+				socket.connect();
+			}
+			console.log("disconnected", new Date());
+			globalContext.setIsUserConnected(false);
+		});
 
+		socket.on("ping", () => {
+			socket.emit("pong");
+		});
+
+		socket.on("error", (...response) => {
+			console.log(response);
+		});
+		return () => {
+			socket.off("disconnect");
+			socket.off("connect");
+			socket.off("ping");
+			socket.off("error");
+		};
+	}, [globalContext]);
 	return (
 		<>
 			<ToastContainer

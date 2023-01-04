@@ -12,15 +12,24 @@ export const GlobalContext = createContext({
 		resolved: [],
 	},
 	isAuthContextSet: false,
+	isUserConnected: false,
+	newRequests: false,
+	newMessages: false,
+	setAreNewMessages: () => {},
+	setAreNewRequests: () => {},
+	setIsUserConnected: () => {},
 	setIsUser: () => {},
 	setUserData: () => {},
 	setIsLoggedIn: () => {},
 	showNotification: () => {},
 });
 
-export const ContextProvider = (props) => {
+export const GlobalContextProvider = (props) => {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [isUser, setIsUser] = useState(false);
+	const [newRequests, setAreNewRequests] = useState(false);
+	const [newMessages, setAreNewMessages] = useState(false);
+	const [isUserConnected, setIsUserConnected] = useState(false);
 	const [userData, setUserData] = useState({
 		id: null,
 		email: null,
@@ -35,7 +44,13 @@ export const ContextProvider = (props) => {
 			value={{
 				isLoggedIn,
 				isUser,
+				isUserConnected,
 				userData,
+				newRequests,
+				newMessages,
+				setAreNewMessages,
+				setAreNewRequests,
+				setIsUserConnected,
 				setUserData,
 				setIsUser,
 				setIsLoggedIn,

@@ -5,6 +5,8 @@
 		"MYSQL_URI": "http://localhost:3306",
 		"MYSQL_DB": "BranchBackend",
 		"MYSQL_USER": "root",
-		"MYSQL_PASSWORD": "root@branchBackend"
+		"MYSQL_PASSWORD": "root@branchBackend",
+		"WEBSOCKET_SERVER_URI": "http://localhost:8000",
+		"WEBSOCKET_SERVER_PASSKEY": "j#nqV#DHx^gdJn97&~nj^yDSscVa7p"
 	}
 }

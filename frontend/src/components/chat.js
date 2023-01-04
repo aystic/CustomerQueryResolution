@@ -2,24 +2,25 @@ import classes from "./chat.module.css";
 import TopBar from "./topBar";
 import Sidebar from "./sidebar";
 import ChatWindow from "./chatwindow";
-import { useMemo, useState, useContext } from "react";
+import { useState, useContext, useEffect, useCallback } from "react";
 import { GlobalContext } from "../store/globalContext";
 import { getUserDetails } from "../api/common";
+import socket from "../utils/socket";
 
 const Chat = () => {
 	const globalContext = useContext(GlobalContext);
 	const [chat, setChat] = useState([]);
 	const [chatTag, setChatTag] = useState("current");
 	const [selectedChat, setSelectedChat] = useState(null);
-	const [receiverEmail, setReceiverEmail] = useState(null);
-
-	const receiverChangeHandler = async (userID, isUser, chatID) => {
+	const [receiverDetails, setReceiverDetails] = useState(null);
+	const [messageToSend, setMessageToSend] = useState(null);
+	const receiverChangeHandler = async (reset, userID, isUser, chatID) => {
 		try {
-			if (userID) {
+			if (!reset) {
 				const data = await getUserDetails(userID, isUser, chatID);
-				if (data.length > 0) setReceiverEmail(data[0].emailID);
+				if (data.length > 0) setReceiverDetails(data[0]);
 			} else {
-				setReceiverEmail(null);
+				setReceiverDetails(null);
 			}
 		} catch (err) {
 			console.error(err);
@@ -28,30 +29,79 @@ const Chat = () => {
 	const chatSelectHandler = (chatID) => {
 		setSelectedChat(chatID);
 	};
-	const addMessageHandler = (message) => {
-		setChat((prev) => {
+	const addNewMessageHandler = useCallback(
+		(message, received) => {
 			const newMessage = {
 				message,
 				sender: globalContext.isUser ? "user" : "agent",
 				timestamp: new Date().toISOString(),
 				_linked_to: null,
-				userID: globalContext.userData.id,
+				userID: globalContext.isUser
+					? globalContext.userData.id
+					: receiverDetails.id,
+				agentID: globalContext.isUser
+					? receiverDetails.id
+					: globalContext.userData.id,
 				chatID: selectedChat,
 				type: "message",
 			};
-			return [...prev, newMessage];
-		});
-	};
-	const tagChangeHandler = useMemo(() => {
+			if (received) {
+				setChat((prev) => {
+					return [...prev, message];
+				});
+			} else {
+				setChat((prev) => {
+					return [...prev, newMessage];
+				});
+			}
+			if (!received) setMessageToSend(newMessage);
+		},
+		[
+			globalContext.userData,
+			globalContext.isUser,
+			receiverDetails,
+			selectedChat,
+		]
+	);
+	const tagChangeHandler = useCallback(() => {
 		return (chatTag) => setChatTag(chatTag);
 	}, []);
+
+	useEffect(() => {
+		if (selectedChat && receiverDetails) {
+			const chat = globalContext.userData.current.find(
+				(chat) => chat.id === selectedChat
+			);
+			socket.emit(
+				"connectToChat",
+				chat.id,
+				chat.userID,
+				globalContext.isUser ? receiverDetails.id : globalContext.userData.id,
+				globalContext.isUser
+			);
+		}
+	}, [selectedChat, receiverDetails, globalContext]);
+	useEffect(() => {
+		if (messageToSend) {
+			socket.emit("sendMessage", messageToSend);
+		}
+	}, [messageToSend]);
+	useEffect(() => {
+		socket.on("newMessage", (message) => {
+			console.log(message);
+			addNewMessageHandler(message, true);
+		});
+		return () => {
+			socket.off("newMessage");
+		};
+	}, [addNewMessageHandler]);
 	return (
 		<>
 			<TopBar
 				classes={classes}
 				tagChangeHandler={tagChangeHandler}
 				chatTag={chatTag}
-				receiverEmail={receiverEmail}
+				receiverDetails={receiverDetails}
 			/>
 			<div className={classes["chat-body"]}>
 				<Sidebar
@@ -66,7 +116,7 @@ const Chat = () => {
 					chat={chat}
 					chatTag={chatTag}
 					selectedChat={selectedChat}
-					addMessageHandler={addMessageHandler}
+					addNewMessageHandler={addNewMessageHandler}
 					classes={classes}
 				/>
 			</div>

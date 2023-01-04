@@ -292,3 +292,16 @@
 .show {
 	opacity: 1;
 }
+
+.notification-dot {
+	position: absolute;
+	height: 1.2rem;
+	width: 1.2rem;
+	border-radius: 100rem;
+	background-color: #fd841f;
+}
+.top-right {
+	top: 0;
+	right: 0;
+	transform: translateX(33%) translateY(-33%);
+}

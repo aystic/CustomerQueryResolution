@@ -1,19 +1,29 @@
 import { useState, useContext, useEffect } from "react";
+import socket from "../utils/socket";
 import { GlobalContext } from "../store/globalContext";
 import Modal from "../common/modal";
 import { createPortal } from "react-dom";
-const TopBar = ({ classes, tagChangeHandler, chatTag, receiverEmail }) => {
+const TopBar = ({ classes, tagChangeHandler, chatTag, receiverDetails }) => {
 	const globalContext = useContext(GlobalContext);
 	const [isModalOpen, setIsModalOpen] = useState(false);
-
 	const chatSegregationHandler = (chatType) => {
 		tagChangeHandler(chatType);
 	};
 	const modalToggleHandler = () => {
+		if (globalContext.newRequests) {
+			globalContext.setAreNewRequests(false);
+		}
 		setIsModalOpen((prev) => !prev);
 	};
 
-	useEffect(() => {}, []);
+	useEffect(() => {
+		socket.on("newChatRequest", () => {
+			globalContext.setAreNewRequests(true);
+		});
+		return () => {
+			socket.off("newChatRequest");
+		};
+	}, [globalContext]);
 	return (
 		<>
 			{isModalOpen &&
@@ -47,29 +57,40 @@ const TopBar = ({ classes, tagChangeHandler, chatTag, receiverEmail }) => {
 					</button>
 					{!globalContext.isUser && (
 						<button
-							style={{ flexGrow: "1" }}
+							style={{ flexGrow: "1", position: "relative" }}
 							onClick={modalToggleHandler}
 							className={`${classes["top-bar-btn"]} ${
 								chatTag === "new-chats" ? classes["top-bar-btn-active"] : ""
 							}`}
 						>
+							{globalContext.newRequests && (
+								<div
+									className={`${classes["notification-dot"]} ${classes["top-right"]}`}
+								></div>
+							)}
 							New Requests
 						</button>
 					)}
 				</div>
 				<div className={classes["chat-details"]}>
 					<div className={classes["user-details"]}>
-						{receiverEmail && (
+						{receiverDetails && (
 							<>
-								<div className={classes["online-status"]}></div>
-								{`${receiverEmail}(Customer${
+								<div className={classes["connection-status"]}></div>
+								{`${receiverDetails.emailID}(Customer${
 									!globalContext.isUser ? "" : " Agent"
 								})`}
 							</>
 						)}
 					</div>
 					<div className={classes["user-details"]}>
-						<div className={classes["online-status"]}></div>
+						<div
+							className={`${classes["connection-status"]} ${
+								globalContext.isUserConnected
+									? classes["online"]
+									: classes["offline"]
+							}`}
+						></div>
 						{globalContext.userData.email}(You)
 					</div>
 				</div>

@@ -4,9 +4,12 @@ const cors = require("cors");
 const { setupDB } = require("./utils/setupDB");
 const chatRoutes = require("./routes/chat");
 const loginRoutes = require("./routes/login");
+const { setupSocket } = require("./utils/setupSocket");
+
 const PORT = process.env.PORT || 8001;
 
 setupDB();
+setupSocket();
 const app = express();
 
 app.use(bodyParser.json());

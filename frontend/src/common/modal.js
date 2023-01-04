@@ -169,6 +169,7 @@ const Modal = ({ modalType, modalToggleHandler, isModalOpen }) => {
 				email: globalContext.userData.email,
 				chatID: chatID,
 				toAdd: false,
+				userID: val.userID,
 			};
 			if (isThisSelected) {
 				await markToResolve(postData);

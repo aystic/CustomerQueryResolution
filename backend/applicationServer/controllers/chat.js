@@ -1,3 +1,4 @@
+const { socket, auth } = require("../utils/setupSocket");
 const Chat = require("../models/mongoChatModel");
 const { QueryTypes } = require("sequelize");
 const { dbConnection } = require("../utils/setupDB");
@@ -20,19 +21,14 @@ exports.getChatList = async (req, res, next) => {
 			);
 		} else {
 			chatList = await dbConnection.query(
-				`SELECT
-								*
-				FROM
-								Chats
+				`SELECT *
+				FROM Chats
 				JOIN (
-						SELECT
-										chatID
-						FROM
-										ChatProgress
-						WHERE
-											agentID = ?
-					) AS ChatList ON
-								Chats.id = ChatList.chatID;`,
+										SELECT chatID
+				FROM ChatProgress
+				WHERE agentID = ?
+									) AS ChatList ON
+												Chats.id = ChatList.chatID;`,
 				{ replacements: [id], type: QueryTypes.SELECT }
 			);
 		}
@@ -42,11 +38,6 @@ exports.getChatList = async (req, res, next) => {
 	}
 };
 
-/*
-{
-
-}
-*/
 exports.createNewChat = async (req, res, next) => {
 	try {
 		const { id, email, priority, issue, subIssue, description, resolved } =
@@ -62,12 +53,10 @@ exports.createNewChat = async (req, res, next) => {
 			throw error;
 		}
 		const user = await dbConnection.query(
-			`SELECT
-			count(*) AS count
-		FROM
-			Users
-		WHERE
-			id = ? AND emailID =?`,
+			`SELECT count(*) AS count
+			FROM Users
+			WHERE id = ?
+			AND emailID =?`,
 			{
 				replacements: [id, email],
 				type: QueryTypes.SELECT,
@@ -75,17 +64,11 @@ exports.createNewChat = async (req, res, next) => {
 		);
 		if (user[0].count === 1) {
 			const response = await dbConnection.query(
-				`INSERT
-				INTO
+				`INSERT INTO
 				Chats (
-					userID,
-					priority,
-					issue,
-					subIssue,
-					description,
-					resolved
+					userID, priority, issue, subIssue, description, resolved
 				)
-			VALUES(?,?,?,?,?,?);`,
+				VALUES(?,?,?,?,?,?);`,
 				{
 					replacements: [id, priority, issue, subIssue, description, resolved],
 					type: QueryTypes.INSERT,
@@ -101,6 +84,7 @@ exports.createNewChat = async (req, res, next) => {
 				message: description,
 			});
 			await chat.save();
+			socket.emit("newChatRequest", auth);
 			res.status(201).json({ message: "created", id: response[0] });
 		} else {
 			const error = new Error("Not allowed!");
@@ -138,12 +122,10 @@ exports.markAsResolved = async (req, res, next) => {
 		let user;
 		if (role === "user") {
 			user = await dbConnection.query(
-				`SELECT
-			count(*) AS count
-		FROM
-			Users
-		WHERE
-			id = ? AND emailID =?`,
+				`SELECT count(*) AS count
+				FROM Users
+				WHERE id = ?
+				AND emailID =?`,
 				{
 					replacements: [id, email],
 					type: QueryTypes.SELECT,
@@ -151,12 +133,10 @@ exports.markAsResolved = async (req, res, next) => {
 			);
 		} else {
 			user = await dbConnection.query(
-				`SELECT
-			count(*) AS count
-		FROM
-			Agents
-		WHERE
-			id = ? AND emailID =?`,
+				`SELECT count(*) AS count
+				FROM Agents
+				WHERE id = ?
+				AND emailID =?`,
 				{
 					replacements: [id, email],
 					type: QueryTypes.SELECT,
@@ -165,13 +145,10 @@ exports.markAsResolved = async (req, res, next) => {
 		}
 		if (user[0].count === 1) {
 			const response = await dbConnection.query(
-				`UPDATE
-					Chats
+				`UPDATE Chats
 				SET
-					resolved = TRUE,
-					resolvedBy=?
-				WHERE
-					id = ?;`,
+									resolved = TRUE, resolvedBy =?
+				WHERE id = ?;`,
 				{
 					replacements: [role === "agent" ? id : -1, chatID],
 					type: QueryTypes.UPDATE,
@@ -179,10 +156,8 @@ exports.markAsResolved = async (req, res, next) => {
 			);
 			await dbConnection.query(
 				`DELETE
-					FROM
-						ChatProgress
-					WHERE
-						chatID = ?;`,
+				FROM ChatProgress
+				WHERE chatID = ?;`,
 				{
 					replacements: [chatID],
 					type: QueryTypes.DELETE,
@@ -213,27 +188,27 @@ exports.getRequests = async (req, res, next) => {
 		}
 		const [total] = await dbConnection.query(
 			`SELECT count(*) AS total
-				FROM Chats
-				WHERE resolved = FALSE
-				AND id NOT IN (
-						SELECT chatID
-				FROM ChatProgress
-					);`,
+			FROM Chats
+			WHERE resolved = FALSE
+			AND id NOT IN (
+									SELECT chatID
+			FROM ChatProgress
+			);`,
 			{
 				type: QueryTypes.SELECT,
 			}
 		);
 		const data = await dbConnection.query(
 			`SELECT *
-				FROM Chats
-				WHERE resolved = FALSE
-				AND id NOT IN (
-										SELECT chatID
-				FROM ChatProgress
-									)
-				ORDER BY
-											priority ASC, createdAt DESC
-				LIMIT ?,?;`,
+			FROM Chats
+			WHERE resolved = FALSE
+			AND id NOT IN (
+													SELECT chatID
+			FROM ChatProgress
+												)
+			ORDER BY
+														priority ASC, createdAt DESC
+			LIMIT ?,?;`,
 			{
 				replacements: [(pageNumber - 1) * rowsPerPage, rowsPerPage],
 				type: QueryTypes.SELECT,
@@ -255,9 +230,9 @@ exports.getRequests = async (req, res, next) => {
 
 exports.addChatToResolve = async (req, res, next) => {
 	try {
-		const { id, email, chatID, toAdd } = req.body;
+		const { id, email, chatID, toAdd, userID } = req.body;
 		if (
-			[id, email, chatID, toAdd].some(
+			[id, email, chatID, toAdd, userID].some(
 				(val) => val === null || val === undefined
 			)
 		) {
@@ -268,36 +243,33 @@ exports.addChatToResolve = async (req, res, next) => {
 		let response;
 		if (toAdd) {
 			response = await dbConnection.query(
-				`INSERT
-					INTO
+				`INSERT INTO
 					ChatProgress (
-						chatID,
-						agentID
-					)
-				VALUES (
-					?,
-					?
-				);`,
+						chatID, agentID,userID
+												)
+					VALUES (
+										?,?,?
+									);`,
 				{
-					replacements: [chatID, id],
+					replacements: [chatID, id, userID],
 					type: QueryTypes.INSERT,
 				}
 			);
 		} else {
 			response = await dbConnection.query(
 				`DELETE
-					FROM
-						ChatProgress
-					WHERE
-						chatID = ?
-						AND agentID = ?;`,
+				FROM ChatProgress
+				WHERE chatID = ?
+				AND agentID = ?
+				AND userID= ? ;`,
 				{
-					replacements: [chatID, id],
+					replacements: [chatID, id, userID],
 					type: QueryTypes.DELETE,
 				}
 			);
 		}
-		res.status(200).json({ message: "Sucvessfully modified", data: response });
+		// socket.emit("startNewSession", auth);
+		res.status(200).json({ message: "Successfully modified", data: response });
 	} catch (err) {
 		next(err);
 	}
@@ -316,12 +288,9 @@ exports.getUserDetails = async (req, res, next) => {
 		let response;
 		if (!isUser) {
 			response = await dbConnection.query(
-				`SELECT
-					*
-				FROM
-					Users
-				WHERE
-					id =?;`,
+				`SELECT *
+				FROM Users
+				WHERE id =?;`,
 				{
 					replacements: [userID],
 					type: QueryTypes.SELECT,
@@ -329,19 +298,13 @@ exports.getUserDetails = async (req, res, next) => {
 			);
 		} else {
 			response = await dbConnection.query(
-				`SELECT
-						*
-					FROM
-						Agents
-					WHERE
-						id = (
-							SELECT
-								agentID
-							FROM
-								ChatProgress
-							WHERE
-								chatID = ?
-						);`,
+				`SELECT *
+				FROM Agents
+				WHERE id = (
+											SELECT agentID
+				FROM ChatProgress
+				WHERE chatID = ?
+										);`,
 				{
 					replacements: [chatID],
 					type: QueryTypes.SELECT,
