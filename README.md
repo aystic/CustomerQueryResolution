@@ -20,6 +20,8 @@
 - Populated the DB with the chats provided in the CSV files (Gives some extra attributes to rows to fit the data model)
 - Dockerized the application (consisting of 5 containers viz Frontend(ReactJS), Backend: Stateless Application server(NodeJS), Backend: Stateful websocket server, Database: MySQL(For relational data), MongoDB(For storing the chats)). Running the application requires just one command `docker compose up --build`.
 
+---
+
 ## Setting up the application on local machine
 
 ### Requirements
@@ -52,7 +54,7 @@ docker compose up --build
 docker container exec -it branchinternational-assignment-db_mongodb-1 mongoimport --type=csv -d BranchBackend -c chats  --columnsHaveTypes --fields 'chatID.int64(),userID.int64(),agentID.int64(),type.string(),sender.string(),timestamp.string(),message.string()' --file=ChatsMongo.csv
 ```
 
-Note: If step 4 fails then check the name of the docker container for the mongoDB database using
+If step 4 fails then check the name of the docker container for the mongoDB database using
 
 ```bash
 docker container ls -a
@@ -60,3 +62,11 @@ docker container ls -a
 ```
 
 ![](images/Screenshot%20from%202023-01-05%2007-13-25.png)
+
+---
+
+### Note
+
+As instructed, I have not implemented authentication feature. But there is need of an email ID to use the application. Since a user cannot signup, List of all valid email ID which can be used to access the application can be found in `db/UserList.csv` and `db/AgentList.csv` files
+
+---
