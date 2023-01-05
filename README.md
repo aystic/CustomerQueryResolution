@@ -12,6 +12,9 @@
   - The customer agent can select a chat request to resolve, After selection the chat is removed from the "new chats request" table thereby avoiding multiple agents to work on same chat simultaneously
     ![](images/Screenshot%20from%202023-01-05%2006-18-13.png)
 - Realtime chat between user and customer agent. Even when either side is offline the messages are not lost and stored in DB which are then fetched when a user clicks to open the chat
+  ![](images/video.gif)
+- Also implemented the online status of users
+  ![](images/Screenshot%20from%202023-01-05%2008-05-56.png)
 - The agent or user can mark the chat as resolved. Once resolved, The chat will be read-only. The user and agent both can view the resolved chats by going to the resolved section
   ![](images/Screenshot%20from%202023-01-05%2006-54-06.png)
 - Populated the DB with the chats provided in the CSV files (Gives some extra attributes to rows to fit the data model)
