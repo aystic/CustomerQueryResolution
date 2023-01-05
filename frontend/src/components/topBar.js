@@ -70,7 +70,7 @@ const TopBar = ({ classes, tagChangeHandler, chatTag, receiverDetails }) => {
 					)}
 				</div>
 				<div className={classes["chat-details"]}>
-					<div className={classes["user-details"]}>
+					<span className={classes["user-details"]}>
 						{receiverDetails && (
 							<>
 								<div className={classes["connection-status"]}></div>
@@ -79,17 +79,15 @@ const TopBar = ({ classes, tagChangeHandler, chatTag, receiverDetails }) => {
 								})`}
 							</>
 						)}
-					</div>
-					<div className={classes["user-details"]}>
 						<div
 							className={`${classes["connection-status"]} ${
 								globalContext.isUserConnected
 									? classes["online"]
 									: classes["offline"]
-							}`}
+							} ${classes["connection-status-self"]}`}
 						></div>
 						{globalContext.userData.email}(You)
-					</div>
+					</span>
 				</div>
 			</div>
 		</>

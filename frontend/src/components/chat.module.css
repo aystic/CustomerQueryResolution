@@ -63,23 +63,26 @@
 	height: 100%;
 }
 .chat-details {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
 	color: white;
 	height: 100%;
 	width: 75%;
+	overflow: hidden;
 }
 .user-details {
 	display: flex;
-	margin: 0.4rem 1rem;
+	align-items: center;
+	margin: auto 1rem;
 }
 .connection-status {
 	display: inline-block;
-	height: 1.6rem;
-	width: 1.6rem;
-	margin: 0.4rem;
+	height: 1.4rem;
+	width: 1.4rem;
+	min-height: 1.4rem;
+	min-width: 1.4rem;
 	border-radius: 100rem;
+}
+.connection-status-self {
+	margin: 0.4rem 0.4rem 0.4rem auto;
 }
 .online {
 	background-color: green;
@@ -309,4 +312,9 @@
 	top: 0;
 	right: 0;
 	transform: translateX(33%) translateY(-33%);
+}
+.top-right-chat {
+	top: 50%;
+	right: 1.4rem;
+	transform: translateY(-50%);
 }

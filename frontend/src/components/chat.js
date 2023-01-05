@@ -23,12 +23,16 @@ const Chat = () => {
 		try {
 			if (!reset) {
 				const data = await getUserDetails(userID, isUser, chatID);
-				if (data.length > 0) setReceiverDetails(data[0]);
+				if (data.length !== 0) {
+					setReceiverDetails(data[0]);
+				} else {
+					setReceiverDetails(null);
+				}
 			} else {
 				setReceiverDetails(null);
 			}
 		} catch (err) {
-			console.error(err);
+			throw new Error(err);
 		}
 	};
 	const chatSelectHandler = (chatID) => {
@@ -36,41 +40,27 @@ const Chat = () => {
 	};
 	const addNewMessageHandler = useCallback(
 		(message, received) => {
-			const newMessage = {
-				message,
-				sender: globalContext.isUser ? "user" : "agent",
-				timestamp: new Date().toISOString(),
-				_linked_to: null,
-				userID: globalContext.isUser
-					? globalContext.userData.id
-					: receiverDetails.id,
-				agentID: globalContext.isUser
-					? receiverDetails.id
-					: globalContext.userData.id,
-				chatID: selectedChat,
-				type: "message",
-			};
-			if (received) {
+			if (selectedChat === message.chatID) {
 				setChat((prev) => {
 					return [...prev, message];
 				});
 			} else {
-				setChat((prev) => {
-					return [...prev, newMessage];
+				globalContext.setUserData((prev) => {
+					const currentChats = prev.current;
+					const idx = currentChats.findIndex(
+						(chat) => chat.id === message.chatID
+					);
+					currentChats[idx].hasNewMessages = true;
+					return { ...prev, current: currentChats };
 				});
 			}
-			if (!received) setMessageToSend(newMessage);
+			if (!received) setMessageToSend(message);
 		},
-		[
-			globalContext.userData,
-			globalContext.isUser,
-			receiverDetails,
-			selectedChat,
-		]
+		[selectedChat, globalContext]
 	);
 
 	useEffect(() => {
-		if (chatTag !== "resolved" && selectedChat && receiverDetails) {
+		if (chatTag !== "resolved" && selectedChat !== null && receiverDetails) {
 			const chat = globalContext.userData.current.find(
 				(chat) => chat.id === selectedChat
 			);
@@ -90,7 +80,6 @@ const Chat = () => {
 	}, [messageToSend]);
 	useEffect(() => {
 		socket.on("newMessage", (message) => {
-			console.log(message);
 			addNewMessageHandler(message, true);
 		});
 		return () => {
@@ -116,6 +105,7 @@ const Chat = () => {
 					receiverChangeHandler={receiverChangeHandler}
 				/>
 				<ChatWindow
+					receiverDetails={receiverDetails}
 					chat={chat}
 					chatTag={chatTag}
 					selectedChat={selectedChat}

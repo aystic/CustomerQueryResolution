@@ -58,17 +58,23 @@ io.use(async (socket, next) => {
 			) {
 				throw new Error("Invalid credentials");
 			}
-			socket.email = email;
-			socket.isUser = isUser;
-			socket.userId = id;
+			for (const session of sessionStore.findAllSessions()) {
+				const chatID = session.chatID;
+				if (isUser === true && id === session.data.user.id) {
+					socket.join(chatID);
+				}
+				if (isUser === false && id === session.data.agent.id) {
+					socket.join(chatID);
+				}
+			}
 
 			if (!isUser) {
-				console.log(socket.email, "joined", process.env.SOCKETIO_AGENT_ROOM);
 				socket.join(process.env.SOCKETIO_AGENT_ROOM);
 				agentStore.saveAgent(id, socket.id);
 			} else {
 				userStore.saveUser(id, socket.id);
 			}
+			console.log(socket.id, "has joined ", socket.rooms);
 		} else {
 			if (
 				socket.handshake.auth.passKey !== process.env.WEBSOCKET_SERVER_PASSKEY
