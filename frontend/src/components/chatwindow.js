@@ -8,13 +8,28 @@ const ChatWindow = ({
 	selectedChat,
 	addNewMessageHandler,
 	chatTag,
+	receiverDetails,
 }) => {
 	const globalContext = useContext(GlobalContext);
 	const [message, setMessage] = useState("");
 	const scrollToRef = useRef(null);
 	const chatHandler = (e) => {
 		e.preventDefault();
-		addNewMessageHandler(message, false);
+		const newMessage = {
+			sender: globalContext.isUser ? "user" : "agent",
+			timestamp: new Date().toISOString(),
+			_linked_to: null,
+			userID: globalContext.isUser
+				? globalContext.userData.id
+				: receiverDetails.id,
+			agentID: globalContext.isUser
+				? receiverDetails.id
+				: globalContext.userData.id,
+			chatID: selectedChat,
+			type: "message",
+			message,
+		};
+		addNewMessageHandler(newMessage, false);
 		setMessage("");
 	};
 	const messageChangeHandler = (e) => {
