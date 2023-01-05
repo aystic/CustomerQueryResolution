@@ -63,6 +63,7 @@ io.use(async (socket, next) => {
 			socket.userId = id;
 
 			if (!isUser) {
+				console.log(socket.email, "joined", process.env.SOCKETIO_AGENT_ROOM);
 				socket.join(process.env.SOCKETIO_AGENT_ROOM);
 				agentStore.saveAgent(id, socket.id);
 			} else {
@@ -86,9 +87,13 @@ io.on("connection", (socket) => {
 	console.log("Connected ", socket.id);
 	console.log(userStore);
 	console.log(agentStore);
-	socket.on("newChatRequest", (auth) => {
-		if (auth && auth.passKey === process.env.SOCKETIO_AGENT_ROOM)
+	socket.on("newChatRequest", async (auth) => {
+		if (
+			auth !== null ||
+			(auth !== undefined && auth.passKey === process.env.SOCKETIO_AGENT_ROOM)
+		) {
 			io.in(process.env.SOCKETIO_AGENT_ROOM).emit("newChatRequest");
+		}
 	});
 
 	socket.on("connectToChat", async (chatID, userID, agentID, isUser) => {

@@ -21,15 +21,17 @@ exports.getChatList = async (req, res, next) => {
 			);
 		} else {
 			chatList = await dbConnection.query(
-				`SELECT *
+				`SELECT Chats.id, Chats.userID, priority, issue, subIssue, description, resolved,resolvedBy, createdAt, updatedAt
 				FROM Chats
-				JOIN (
-										SELECT chatID
+				JOIN (SELECT *
 				FROM ChatProgress
-				WHERE agentID = ?
-									) AS ChatList ON
-												Chats.id = ChatList.chatID;`,
-				{ replacements: [id], type: QueryTypes.SELECT }
+				WHERE agentID = ?) AS ChatList ON
+				Chats.id = ChatList.chatID
+				UNION
+				SELECT Chats.id, Chats.userID, priority, issue, subIssue, description, resolved,resolvedBy, createdAt, updatedAt
+				FROM Chats
+				WHERE resolvedBy = ?;`,
+				{ replacements: [id, id], type: QueryTypes.SELECT }
 			);
 		}
 		res.status(200).json({ data: chatList });
