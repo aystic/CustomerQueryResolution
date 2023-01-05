@@ -20,7 +20,11 @@ class InMemorySessionStore extends SessionStore {
 	}
 
 	findAllSessions() {
-		return [...this.sessions.values()];
+		let allSessions = [];
+		for (const key of this.sessions.keys()) {
+			allSessions.push({ chatID: key, data: this.findSession(key) });
+		}
+		return allSessions;
 	}
 }
 

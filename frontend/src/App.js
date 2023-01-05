@@ -31,6 +31,7 @@ function App() {
 				current: [],
 			};
 			userData.forEach((val) => {
+				val.hasNewMessages = false;
 				if (val.resolved === 1) {
 					userChatData.resolved.push(val);
 				} else {

@@ -1,8 +1,7 @@
 import { useContext } from "react";
 import { getChatMessages, markAsResolve } from "../api/common";
 import { GlobalContext } from "../store/globalContext";
-// import markAsResolvedBtn from "./mark-as-resolved.svg";
-// let firstRender = true;
+
 const Sidebar = ({
 	classes,
 	chatTag,
@@ -16,7 +15,18 @@ const Sidebar = ({
 	const chatListClickHandler = async (chatID, userID) => {
 		if (chatID !== selectedChat) {
 			try {
-				receiverChangeHandler(false, userID, globalContext.isUser, chatID);
+				globalContext.setUserData((prev) => {
+					const currentChats = prev.current;
+					const idx = currentChats.findIndex((chat) => chat.id === chatID);
+					currentChats[idx].hasNewMessages = false;
+					return { ...prev, current: currentChats };
+				});
+				await receiverChangeHandler(
+					false,
+					userID,
+					globalContext.isUser,
+					chatID
+				);
 				chatSelectHandler(chatID);
 				const messages = await getChatMessages(chatID);
 				setChat(messages);
@@ -81,6 +91,11 @@ const Sidebar = ({
 						</p>
 					</div>
 				</div>
+				{val.hasNewMessages && (
+					<div
+						className={`${classes["notification-dot"]} ${classes["top-right-chat"]}`}
+					></div>
+				)}
 				{chatTag === "current" ? (
 					<button
 						onClick={markAsResolvedHandler.bind(null, val.id)}
