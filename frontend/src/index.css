@@ -21,7 +21,11 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 	font-size: 1.6rem;
 }
-
+/* *:focus-visible {
+	outline-style: solid !important;
+	outline-color: #aaa !important;
+	outline-width: 0.2rem !important;
+} */
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
 		monospace;

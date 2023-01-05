@@ -1,0 +1,13 @@
+{
+	"env": {
+		"PORT": "8000",
+		"MONGODB_URI": "mongodb://127.0.0.1:27017/BranchBackend",
+		"MYSQL_HOST": "localhost",
+		"MYSQL_URI": "http://localhost:3306",
+		"MYSQL_DB": "BranchBackend",
+		"MYSQL_USER": "root",
+		"MYSQL_PASSWORD": "root@branchBackend",
+		"SOCKETIO_AGENT_ROOM": "dCRPiJVJZxoxFSZVtiW9AF4PhC79HT",
+		"WEBSOCKET_SERVER_PASSKEY": "j#nqV#DHx^gdJn97&~nj^yDSscVa7p"
+	}
+}

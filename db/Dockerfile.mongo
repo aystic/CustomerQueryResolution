@@ -1,0 +1,5 @@
+FROM mongo:6.0.3
+WORKDIR /branchData
+COPY . .
+EXPOSE 27017
+CMD ["mongod"]
