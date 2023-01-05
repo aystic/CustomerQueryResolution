@@ -14,6 +14,11 @@ const Chat = () => {
 	const [selectedChat, setSelectedChat] = useState(null);
 	const [receiverDetails, setReceiverDetails] = useState(null);
 	const [messageToSend, setMessageToSend] = useState(null);
+
+	const tagChangeHandler = (chatType) => {
+		setChatTag(chatType);
+	};
+
 	const receiverChangeHandler = async (reset, userID, isUser, chatID) => {
 		try {
 			if (!reset) {
@@ -63,12 +68,9 @@ const Chat = () => {
 			selectedChat,
 		]
 	);
-	const tagChangeHandler = useCallback(() => {
-		return (chatTag) => setChatTag(chatTag);
-	}, []);
 
 	useEffect(() => {
-		if (selectedChat && receiverDetails) {
+		if (chatTag !== "resolved" && selectedChat && receiverDetails) {
 			const chat = globalContext.userData.current.find(
 				(chat) => chat.id === selectedChat
 			);
@@ -80,7 +82,7 @@ const Chat = () => {
 				globalContext.isUser
 			);
 		}
-	}, [selectedChat, receiverDetails, globalContext]);
+	}, [selectedChat, receiverDetails, globalContext, chatTag]);
 	useEffect(() => {
 		if (messageToSend) {
 			socket.emit("sendMessage", messageToSend);
@@ -95,6 +97,7 @@ const Chat = () => {
 			socket.off("newMessage");
 		};
 	}, [addNewMessageHandler]);
+
 	return (
 		<>
 			<TopBar

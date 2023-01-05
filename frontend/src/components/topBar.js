@@ -6,9 +6,6 @@ import { createPortal } from "react-dom";
 const TopBar = ({ classes, tagChangeHandler, chatTag, receiverDetails }) => {
 	const globalContext = useContext(GlobalContext);
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const chatSegregationHandler = (chatType) => {
-		tagChangeHandler(chatType);
-	};
 	const modalToggleHandler = () => {
 		if (globalContext.newRequests) {
 			globalContext.setAreNewRequests(false);
@@ -39,7 +36,7 @@ const TopBar = ({ classes, tagChangeHandler, chatTag, receiverDetails }) => {
 				<div className={classes["chat-actions"]}>
 					<button
 						style={{ flexGrow: "1.8" }}
-						onClick={chatSegregationHandler.bind(null, "current")}
+						onClick={tagChangeHandler.bind(null, "current")}
 						className={`${classes["top-bar-btn"]} ${
 							chatTag === "current" ? classes["top-bar-btn-active"] : ""
 						}`}
@@ -48,7 +45,7 @@ const TopBar = ({ classes, tagChangeHandler, chatTag, receiverDetails }) => {
 					</button>
 					<button
 						style={{ flexGrow: "1.5" }}
-						onClick={chatSegregationHandler.bind(null, "resolved")}
+						onClick={tagChangeHandler.bind(null, "resolved")}
 						className={`${classes["top-bar-btn"]} ${
 							chatTag === "resolved" ? classes["top-bar-btn-active"] : ""
 						}`}
