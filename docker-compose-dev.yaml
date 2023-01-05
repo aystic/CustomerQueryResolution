@@ -46,13 +46,14 @@ services:
     networks:
       - appVirtualNetwork
     restart: always
-    # performs data migration on mysql db
     command: ./docker-entrypoint.sh
 
   db_mysql:
     build:
       context: db
       dockerfile: Dockerfile.mysql
+    ports:
+      - "3306:3306"
     networks:
       - appVirtualNetwork
     restart: always
@@ -66,6 +67,8 @@ services:
     build:
       context: db
       dockerfile: Dockerfile.mongo
+    ports:
+      - "27017:27017"
     networks:
       - appVirtualNetwork
     restart: always

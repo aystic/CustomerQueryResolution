@@ -6,8 +6,7 @@
 	"scripts": {
 		"start": "node server.js",
 		"dev": "nodemon server.js",
-		"migrate:mysql":"",
-		"migrate:mongodb":""
+		"migrate:mysql": "node ./utils/dbMigration/migrateMysql.js"
 	},
 	"author": "Mohit Pathak",
 	"license": "MIT",
