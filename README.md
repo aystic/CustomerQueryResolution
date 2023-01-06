@@ -33,7 +33,7 @@
 1. Clone the GitHub repo on your local machine
 
 ```bash
-   git clone https://github.com/aystic/BranchInternational-Assignment.git
+git clone https://github.com/aystic/BranchInternational-Assignment.git
 ```
 
 2. Navigate inside the cloned repo
