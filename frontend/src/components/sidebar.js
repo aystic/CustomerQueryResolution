@@ -15,12 +15,14 @@ const Sidebar = ({
 	const chatListClickHandler = async (chatID, userID) => {
 		if (chatID !== selectedChat) {
 			try {
-				globalContext.setUserData((prev) => {
-					const currentChats = prev.current;
-					const idx = currentChats.findIndex((chat) => chat.id === chatID);
-					currentChats[idx].hasNewMessages = false;
-					return { ...prev, current: currentChats };
-				});
+				if (chatTag !== "resolved") {
+					globalContext.setUserData((prev) => {
+						const currentChats = prev.current;
+						const idx = currentChats.findIndex((chat) => chat.id === chatID);
+						currentChats[idx].hasNewMessages = false;
+						return { ...prev, current: currentChats };
+					});
+				}
 				await receiverChangeHandler(
 					false,
 					userID,

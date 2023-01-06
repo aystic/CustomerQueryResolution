@@ -101,25 +101,23 @@ function App() {
 				</div>
 			)}
 			{!globalContext.isLoggedIn && (
-				<div className="start-page">
-					<div className="start-form-container">
-						<form onSubmit={startChatHandler}>
-							<input
-								className="username-input"
-								placeholder="Enter your email"
-								type={"email"}
-								value={email}
-								onChange={inputChangeHandler}
-							/>
-							<button
-								disabled={!isValid}
-								className="username-input-btn"
-								type="submit"
-							>
-								Enter
-							</button>
-						</form>
-					</div>
+				<div className="start-form-container">
+					<form onSubmit={startChatHandler}>
+						<input
+							className="username-input"
+							placeholder="Enter your email"
+							type={"email"}
+							value={email}
+							onChange={inputChangeHandler}
+						/>
+						<button
+							disabled={!isValid}
+							className="username-input-btn"
+							type="submit"
+						>
+							Enter
+						</button>
+					</form>
 				</div>
 			)}
 		</>
