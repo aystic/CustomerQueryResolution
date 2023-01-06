@@ -16,6 +16,9 @@ const Chat = () => {
 	const [messageToSend, setMessageToSend] = useState(null);
 
 	const tagChangeHandler = (chatType) => {
+		setChat([]);
+		setSelectedChat(null);
+		setReceiverDetails(null);
 		setChatTag(chatType);
 	};
 
