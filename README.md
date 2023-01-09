@@ -2,6 +2,9 @@
 
 ## Features implemented
 
+- Agent Interface and Customer Interface
+  ![](images/Screenshot%20from%202023-01-09%2019-59-18.png)
+  ![](images/Screenshot%20from%202023-01-09%2019-59-50.png)
 - Intuitive UI for user and customer agent
   ![](images/Screenshot%20from%202023-01-05%2006-15-52.png)
 - Feature for user to add new queries and a way to prioritise these new queries; User can select a total of 16 different cases (4 issues x 4 subissues) comprising different issues having different prioritties
@@ -17,6 +20,9 @@
   ![](images/Screenshot%20from%202023-01-05%2008-05-56.png)
 - The agent or user can mark the chat as resolved. Once resolved, The chat will be read-only. The user and agent both can view the resolved chats by going to the resolved section
   ![](images/Screenshot%20from%202023-01-05%2006-54-06.png)
+- Implemented New chat request notification for agents and new messages notifications
+  ![](images/Screenshot%20from%202023-01-09%2020-03-14.png)
+  ![](images/Screenshot%20from%202023-01-09%2020-03-54.png)
 - Populated the DB with the chats provided in the CSV files (Gives some extra attributes to rows to fit the data model)
 - Dockerized the application (consisting of 5 containers viz Frontend(ReactJS), Backend: Stateless Application server(NodeJS), Backend: Stateful websocket server, Database: MySQL(For relational data), MongoDB(For storing the chats)). Running the application requires just one command `docker compose up --build`.
 
