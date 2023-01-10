@@ -3,9 +3,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-ENV REACT_APP_BACKEND_URL "http://localhost:8001"
-ENV REACT_APP_WEBSOCKET_URL "http://localhost:8000"
-
 RUN npm run build
 
 FROM nginx:1.23.3-alpine-slim

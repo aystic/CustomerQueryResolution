@@ -3,6 +3,8 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile
+    env_file:
+      - ./frontend/.env.prod.list
     ports:
       - 80:80
     depends_on:
@@ -21,7 +23,7 @@ services:
     ports:
       - "8001:8001"
     env_file:
-      - ./backend/applicationServer/.env-prod.list
+      - ./backend/applicationServer/.env.list
     depends_on:
       - db_mongodb
       - db_mysql
@@ -37,7 +39,7 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - ./backend/websocketServer/.env-prod.list
+      - ./backend/websocketServer/.env.list
     depends_on:
       db_mongodb:
         condition: service_started
@@ -53,6 +55,8 @@ services:
     build:
       context: db
       dockerfile: Dockerfile.mysql
+    volumes:
+      - mysqlData:/var/lib/mysql:rw
     networks:
       - appVirtualNetwork
     restart: always
@@ -66,9 +70,15 @@ services:
     build:
       context: db
       dockerfile: Dockerfile.mongo
+    volumes:
+      - mongoData:/data/db:rw
     networks:
       - appVirtualNetwork
     restart: always
 
 networks:
   appVirtualNetwork: {}
+
+volumes:
+  mysqlData:
+  mongoData:
