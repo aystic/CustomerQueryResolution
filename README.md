@@ -1,7 +1,11 @@
-# Branch International-Assignment by Mohit Pathak
+# Customer Query Resolution application by Mohit Pathak
+
 ## The application can be accessed at [http://34.131.229.9/](http://34.131.229.9/)
 
-### Login details: 
+## Demo video can be viewed [Here](https://drive.google.com/file/d/1X-rEO9fupCr-CsKnmFFw_w7IrQjvckXg/view?usp=sharing)
+
+### Login details:
+
 **User mode:** 208@user.com, 218@user.com, 444@user.com, 676@user.com, 779@user.com, 1092@user.com,
 1155@user.com, 1241@user.com, 1245@user.com, 1354@user.com, 1481@user.com, 2035@user.com, 2126@user.com, 2517@user.com, 2780@user.com, 2788@user.com, 2884@user.com, 2926@user.com, 2983@user.com, 3056@user.com, 3091@user.com, 3112@user.com, 3170@user.com, 3643@user.com, 3701@user.com, 3725@user.com, 3775@user.com, 3897@user.com, 3900@user.com, 4178@user.com, 4373@user.com, 4442@user.com, 4481@user.com, 4522@user.com, 4708@user.com, 5000@user.com, 5297@user.com, 5480@user.com, 5696@user.com, 5724@user.com, 6054@user.com, 6326@user.com, 6515@user.com, 6884@user.com, 7140@user.com, 7457@user.com, 7725@user.com, 7812@user.com, 7837@user.com, 7944@user.com, 8014@user.com, 8101@user.com, 8125@user.com, 8392@user.com, 8647@user.com
 
@@ -48,13 +52,13 @@
 1. Clone the GitHub repo on your local machine
 
 ```bash
-git clone https://github.com/aystic/BranchInternational-Assignment.git
+git clone https://github.com/aystic/CustomerQueryResolution.git
 ```
 
 2. Navigate inside the cloned repo
 
 ```bash
-cd BranchInternational-Assignment
+cd CustomerQueryResolution
 ```
 
 3. Run the docker compose command
@@ -66,22 +70,19 @@ docker compose up --build
 4. Run the following command for mongoDB chat migration
 
 ```bash
-docker container exec -it branchinternational-assignment-db_mongodb-1 mongoimport --type=csv -d BranchBackend -c chats  --columnsHaveTypes --fields 'chatID.int64(),userID.int64(),agentID.int64(),type.string(),sender.string(),timestamp.string(),message.string()' --file=ChatsMongo.csv
+docker container exec -it customerqueryresolution-db_mongodb-1 mongoimport --type=csv -d BranchBackend -c chats  --columnsHaveTypes --fields 'chatID.int64(),userID.int64(),agentID.int64(),type.string(),sender.string(),timestamp.string(),message.string()' --file=ChatsMongo.csv
 ```
 
 If step 4 fails then check the name of the docker container for the mongoDB database using
 
 ```bash
 docker container ls -a
-#"branchinternational-assignment-db_mongodb-1" in this case
 ```
-
-![](images/Screenshot%20from%202023-01-05%2007-13-25.png)
 
 ---
 
 ### Note
 
-As instructed, I have not implemented authentication feature. But there is need of an email ID to use the application. Since a user cannot signup, List of all valid email ID which can be used to access the application can be found in `db/UserList.csv` and `db/AgentList.csv` files
+I have not implemented authentication feature. But there is need of an email ID to use the application. Since a user cannot signup, List of all valid email ID which can be used to access the application can be found in `db/UserList.csv` and `db/AgentList.csv` files
 
 ---
