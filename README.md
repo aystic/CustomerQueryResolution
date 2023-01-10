@@ -88,9 +88,3 @@ docker container ls -a
 ```
 
 ---
-
-### Note
-
-I have not implemented authentication feature. But there is need of an email ID to use the application. Since a user cannot signup, List of all valid email ID which can be used to access the application can be found in `db/UserList.csv` and `db/AgentList.csv` files
-
----
