@@ -38,6 +38,14 @@
   ![](images/Screenshot%20from%202023-01-09%2020-03-54.png)
 - Populated the DB with the chats provided in the CSV files (Gives some extra attributes to rows to fit the data model)
 - Dockerized the application (consisting of 5 containers viz Frontend(ReactJS), Backend: Stateless Application server(NodeJS), Backend: Stateful websocket server, Database: MySQL(For relational data), MongoDB(For storing the chats)). Running the application requires just one command `docker compose up --build`.
+- Added notification and loader to improve the UX
+  ![](images/notification.png)
+
+---
+
+## Architecture
+
+![](images/architecture.png)
 
 ---
 
@@ -64,7 +72,7 @@ cd CustomerQueryResolution
 3. Run the docker compose command
 
 ```bash
-docker compose up --build
+docker compose -f ./docker-compose.dev.yaml up --build
 ```
 
 4. Run the following command for mongoDB chat migration
