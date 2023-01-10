@@ -1,5 +1,6 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { getChatMessages, markAsResolve } from "../api/common";
+import Loader from "../common/loader";
 import { GlobalContext } from "../store/globalContext";
 
 const Sidebar = ({
@@ -9,12 +10,15 @@ const Sidebar = ({
 	selectedChat,
 	chatSelectHandler,
 	receiverChangeHandler,
+	toggleLoading,
 }) => {
 	const globalContext = useContext(GlobalContext);
+	const [isLoading, setIsLoading] = useState(false);
 	// const scrollToRef = useRef(null);
 	const chatListClickHandler = async (chatID, userID) => {
 		if (chatID !== selectedChat) {
 			try {
+				toggleLoading();
 				if (chatTag !== "resolved") {
 					globalContext.setUserData((prev) => {
 						const currentChats = prev.current;
@@ -32,7 +36,13 @@ const Sidebar = ({
 				chatSelectHandler(chatID);
 				const messages = await getChatMessages(chatID);
 				setChat(messages);
+				toggleLoading();
 			} catch (err) {
+				globalContext.showNotification({
+					type: "error",
+					value: "Failed to get messages!",
+				});
+				toggleLoading();
 				receiverChangeHandler(true);
 				chatSelectHandler(null);
 				console.error(err);
@@ -45,6 +55,7 @@ const Sidebar = ({
 	};
 	const markAsResolvedHandler = async (chatID) => {
 		try {
+			setIsLoading(true);
 			let postData = {
 				id: globalContext.userData.id,
 				chatID,
@@ -66,7 +77,17 @@ const Sidebar = ({
 				};
 			});
 			chatSelectHandler(null);
+			setIsLoading(false);
+			globalContext.showNotification({
+				type: "success",
+				value: "Successfully marked the chat as resolved!",
+			});
 		} catch (err) {
+			setIsLoading(false);
+			globalContext.showNotification({
+				type: "error",
+				value: "Failed to mark the chat as resolved!",
+			});
 			console.error(err);
 		}
 	};
@@ -76,39 +97,42 @@ const Sidebar = ({
 			: globalContext.userData.resolved;
 	const list = chatList.map((val, idx) => {
 		return (
-			<div key={idx} className={classes["chat-list-item-container"]}>
-				<div
-					onClick={chatListClickHandler.bind(null, val.id, val.userID)}
-					className={`${classes["chat-list"]} ${
-						selectedChat === val.id ? classes["chat-list-active"] : ""
-					}`}
-				>
-					<div className={classes["chip"]}>{val.issue}</div>
-					<div className={classes["chip"]}>{val.subIssue}</div>
-					<div>
-						<p>
-							{val.description.length > 85
-								? val.description.substr(0, 85) + "..."
-								: val.description}
-						</p>
-					</div>
-				</div>
-				{val.hasNewMessages && (
+			<>
+				{isLoading && <Loader />}
+				<div key={idx} className={classes["chat-list-item-container"]}>
 					<div
-						className={`${classes["notification-dot"]} ${classes["top-right-chat"]}`}
-					></div>
-				)}
-				{chatTag === "current" ? (
-					<button
-						onClick={markAsResolvedHandler.bind(null, val.id)}
-						className={classes["mark-as-resolved-btn"]}
+						onClick={chatListClickHandler.bind(null, val.id, val.userID)}
+						className={`${classes["chat-list"]} ${
+							selectedChat === val.id ? classes["chat-list-active"] : ""
+						}`}
 					>
-						{/* <img src={markAsResolvedBtn} alt="Mark as resolved button" /> */}
-					</button>
-				) : (
-					""
-				)}
-			</div>
+						<div className={classes["chip"]}>{val.issue}</div>
+						<div className={classes["chip"]}>{val.subIssue}</div>
+						<div>
+							<p>
+								{val.description.length > 85
+									? val.description.substr(0, 85) + "..."
+									: val.description}
+							</p>
+						</div>
+					</div>
+					{val.hasNewMessages && (
+						<div
+							className={`${classes["notification-dot"]} ${classes["top-right-chat"]}`}
+						></div>
+					)}
+					{chatTag === "current" ? (
+						<button
+							onClick={markAsResolvedHandler.bind(null, val.id)}
+							className={classes["mark-as-resolved-btn"]}
+						>
+							{/* <img src={markAsResolvedBtn} alt="Mark as resolved button" /> */}
+						</button>
+					) : (
+						""
+					)}
+				</div>
+			</>
 		);
 	});
 	// list.push(

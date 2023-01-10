@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useContext } from "react";
+import Loader from "../common/loader";
 import { GlobalContext } from "../store/globalContext";
 import NewChat from "./newChat";
 import sendBtn from "./send-button.svg";
@@ -9,6 +10,7 @@ const ChatWindow = ({
 	addNewMessageHandler,
 	chatTag,
 	receiverDetails,
+	isLoading,
 }) => {
 	const globalContext = useContext(GlobalContext);
 	const [message, setMessage] = useState("");
@@ -68,7 +70,8 @@ const ChatWindow = ({
 
 	return (
 		<div className={classes["chat"]}>
-			{selectedChat !== null ? (
+			{isLoading && <Loader />}
+			{!isLoading && selectedChat !== null ? (
 				<>
 					<div
 						className={`${classes["message-list-container"]} ${classes["scroller "]}`}

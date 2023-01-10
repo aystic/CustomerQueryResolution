@@ -14,7 +14,10 @@ const Chat = () => {
 	const [selectedChat, setSelectedChat] = useState(null);
 	const [receiverDetails, setReceiverDetails] = useState(null);
 	const [messageToSend, setMessageToSend] = useState(null);
-
+	const [isLoading, setIsLoading] = useState(false);
+	const toggleLoading = () => {
+		setIsLoading((prev) => !prev);
+	};
 	const tagChangeHandler = (chatType) => {
 		setChat([]);
 		setSelectedChat(null);
@@ -100,6 +103,7 @@ const Chat = () => {
 			/>
 			<div className={classes["chat-body"]}>
 				<Sidebar
+					toggleLoading={toggleLoading}
 					setChat={setChat}
 					selectedChat={selectedChat}
 					chatSelectHandler={chatSelectHandler}
@@ -108,6 +112,7 @@ const Chat = () => {
 					receiverChangeHandler={receiverChangeHandler}
 				/>
 				<ChatWindow
+					isLoading={isLoading}
 					receiverDetails={receiverDetails}
 					chat={chat}
 					chatTag={chatTag}
