@@ -6,7 +6,7 @@ import { login } from "./api/common";
 import { getChat } from "./api/common";
 import Chat from "./components/chat";
 import { ToastContainer } from "react-toastify";
-
+import Loader from "./common/loader";
 const EMAIL_REGEX =
 	/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -14,6 +14,7 @@ function App() {
 	const [email, setEmail] = useState("");
 	const globalContext = useContext(GlobalContext);
 	const [isValid, setValidity] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 	const inputChangeHandler = (e) => {
 		setEmail(e.target.value);
 		setValidity(EMAIL_REGEX.test(e.target.value));
@@ -22,6 +23,7 @@ function App() {
 	const startChatHandler = async (e) => {
 		e.preventDefault();
 		try {
+			setIsLoading(true);
 			const data = await login(email);
 			const userData = await getChat(data.id, data.emailID);
 			const userChatData = {
@@ -50,7 +52,34 @@ function App() {
 			}
 			socket.auth = { email: data.emailID, id: data.id, isUser };
 			socket.connect();
+			setIsLoading(false);
+			globalContext.showNotification({
+				type: "success",
+				value: "Logged in successfully!",
+			});
 		} catch (err) {
+			if (err.hasResponse) {
+				switch (err.status) {
+					case 404: {
+						globalContext.showNotification({
+							type: "error",
+							value: "User not found!",
+						});
+						break;
+					}
+					default:
+						globalContext.showNotification({
+							type: "error",
+							value: "Some error occurred!",
+						});
+				}
+			} else {
+				globalContext.showNotification({
+					type: "error",
+					value: "Some error occurred!",
+				});
+			}
+			setIsLoading(false);
 			console.error(err);
 		}
 	};
@@ -100,7 +129,9 @@ function App() {
 					<Chat />
 				</div>
 			)}
-			{!globalContext.isLoggedIn && (
+			{isLoading ? (
+				<Loader />
+			) : !globalContext.isLoggedIn ? (
 				<div className="start-form-container">
 					<form onSubmit={startChatHandler}>
 						<input
@@ -119,6 +150,8 @@ function App() {
 						</button>
 					</form>
 				</div>
+			) : (
+				""
 			)}
 		</>
 	);

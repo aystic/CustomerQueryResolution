@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - 80:80
+    env_file:
+      - ./frontend/.env.dev.list
     depends_on:
       - db_mongodb
       - db_mysql
@@ -12,7 +14,6 @@ services:
       - app_server
     networks:
       - appVirtualNetwork
-    restart: always
 
   app_server:
     build:
@@ -21,14 +22,13 @@ services:
     ports:
       - "8001:8001"
     env_file:
-      - ./backend/applicationServer/.env-prod.list
+      - ./backend/applicationServer/.env.list
     depends_on:
       - db_mongodb
       - db_mysql
       - socket_server
     networks:
       - appVirtualNetwork
-    restart: always
 
   socket_server:
     build:
@@ -37,7 +37,7 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - ./backend/websocketServer/.env-prod.list
+      - ./backend/websocketServer/.env.list
     depends_on:
       db_mongodb:
         condition: service_started
@@ -45,33 +45,39 @@ services:
         condition: service_healthy
     networks:
       - appVirtualNetwork
-    restart: always
+    # performs data migration on mysql db
     command: ./docker-entrypoint.sh
 
   db_mysql:
     build:
       context: db
       dockerfile: Dockerfile.mysql
+    volumes:
+      - mysqlData:/var/lib/mysql:rw
     ports:
       - "3306:3306"
     networks:
       - appVirtualNetwork
-    restart: always
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-ppass"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
-      retries: 20
+      retries: 25
 
   db_mongodb:
     build:
       context: db
       dockerfile: Dockerfile.mongo
+    volumes:
+      - mongoData:/data/db:rw
     ports:
       - "27017:27017"
     networks:
       - appVirtualNetwork
-    restart: always
 
 networks:
   appVirtualNetwork: {}
+
+volumes:
+  mysqlData:
+  mongoData:

@@ -5,8 +5,22 @@ export const login = async (email) => {
 			email: `${email}`,
 		});
 		return response.data.data[0];
-	} catch (err) {
-		throw new Error(err);
+	} catch (error) {
+		const err = new Error(error);
+		err.hasResponse = false;
+		err.hasRequest = false;
+		if (error.response) {
+			err.hasResponse = true;
+			err.data = error.response.data;
+			err.status = error.response.status;
+			err.headers = error.response.headers;
+		} else if (error.request) {
+			err.hasRequest = true;
+			err.request = error.request;
+		} else {
+			err.message = error.message;
+		}
+		throw err;
 	}
 };
 

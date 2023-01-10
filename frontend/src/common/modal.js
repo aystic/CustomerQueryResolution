@@ -94,11 +94,15 @@ const Modal = ({ modalType, modalToggleHandler, isModalOpen }) => {
 			});
 			modalToggleHandler();
 			setLoading(false);
+			globalContext.showNotification({
+				type: "success",
+				value: "Created new request!",
+			});
 		} catch (err) {
 			setLoading(false);
 			globalContext.showNotification({
 				type: "error",
-				value: err.message,
+				value: "Could not create new request!",
 			});
 			console.error(err);
 		}
@@ -136,11 +140,15 @@ const Modal = ({ modalType, modalToggleHandler, isModalOpen }) => {
 				setLoading(false);
 			} catch (err) {
 				setLoading(false);
+				globalContext.showNotification({
+					type: "error",
+					value: "Failed to fetch the requests!",
+				});
 				console.error(err);
 			}
 		};
 		if (modalType === "newRequests") fetch();
-	}, [currentPage, rowsPerPage, modalType]);
+	}, [currentPage, rowsPerPage, modalType, globalContext]);
 
 	useEffect(() => {
 		if (

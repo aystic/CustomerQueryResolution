@@ -16,7 +16,6 @@ const NewChat = ({ showNotification }) => {
 						modalType={"newChat"}
 						isModalOpen={isModalOpen}
 						modalToggleHandler={modalToggleHandler}
-						showNotification={showNotification}
 					/>,
 					document.getElementById("modal-container")
 				)}
