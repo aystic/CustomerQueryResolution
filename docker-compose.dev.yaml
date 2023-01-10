@@ -2,11 +2,9 @@ services:
   frontend:
     build:
       context: frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - 80:80
-    env_file:
-      - ./frontend/.env.dev.list
     depends_on:
       - db_mongodb
       - db_mysql
