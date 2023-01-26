@@ -2,7 +2,7 @@
 
 ## The application can be accessed at [http://34.131.229.9/](http://34.131.229.9/)
 
-## Demo video can be viewed [Here](https://drive.google.com/file/d/1X-rEO9fupCr-CsKnmFFw_w7IrQjvckXg/view?usp=sharing)
+## Demo video can be viewed [Here](https://youtu.be/AJab_fKr_Wo)
 
 ### Login details:
 
