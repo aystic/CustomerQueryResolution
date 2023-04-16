@@ -1,7 +1,5 @@
 # Customer Query Resolution application by Mohit Pathak
 
-## The application can be accessed at [http://34.131.229.9/](http://34.131.229.9/)
-
 ## Demo video can be viewed [Here](https://youtu.be/AJab_fKr_Wo)
 
 ### Login details:
